@@ -1,0 +1,29 @@
+# IDE metadata
+.metadata/
+
+# Build outputs
+keil/Listings/
+keil/Objects/
+keil/JLinkLog.txt
+keil/*.uvguix.*
+Debug/
+*.o
+*.obj
+*.out
+*.elf
+*.hex
+*.bin
+*.map
+
+# Third-party SDK (referenced externally)
+source/third_party/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
