@@ -53,6 +53,8 @@ typedef struct
 void trackless_params_init(void);
 void ctrl_params_init(void);
 void steer_control(float *output);
+void steer_gyro_ctrl(void);
+void steer_angle_ctrl(void);
 void position_control(float fixed_threshold_cm,uint16_t feed_times);
 void distance_control(void);	
 

@@ -69,4 +69,5 @@
 #include "subtask.h"
 #include "developer_mode.h"
 #include "nclink.h"
+#include "debug_if.h"
 #endif
