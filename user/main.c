@@ -1,19 +1,19 @@
 /****************************************************************************************
-	MSPM0G3507ç”µèµ›å°è½¦å¼€æºæ–¹æ¡ˆèµ„æºåˆ†é…è¡¨--MSPM0å­¦ä¹ ä¸­å¿ƒäº¤æµç¾¤828746221		
-	åŠŸèƒ½	å•ç‰‡æœºç«¯å£	å¤–è®¾ç«¯å£
-	æ— ååˆ›æ–°åœ°é¢ç«™é€šè®¯	
-		PA10-->UART0-TXD	USBè½¬TTL-RXD
-		PA11-->UART0-RXD	USBè½¬TTL-TXD
-	æœºå™¨è§†è§‰OPENMV4 MINI	
+	MSPM0G3507µçÈüĞ¡³µ¿ªÔ´·½°¸×ÊÔ´·ÖÅä±í--MSPM0Ñ§Ï°ÖĞĞÄ½»Á÷Èº828746221		
+	¹¦ÄÜ	µ¥Æ¬»ú¶Ë¿Ú	ÍâÉè¶Ë¿Ú
+	ÎŞÃû´´ĞÂµØÃæÕ¾Í¨Ñ¶	
+		PA10-->UART0-TXD	USB×ªTTL-RXD
+		PA11-->UART0-RXD	USB×ªTTL-TXD
+	»úÆ÷ÊÓ¾õOPENMV4 MINI	
 		PA8-UART1-TXD	UART3-RXD
 		PA9-->UART1-RXD	UART3-TXD
-	æ‰‹æœºè“ç‰™APPåœ°é¢ç«™	
-		PA21-UART2-TXD	è“ç‰™ä¸²å£æ¨¡å—RXD
-		PA22-->UART2-RXD	è“ç‰™ä¸²å£æ¨¡å—TXD
-	US100è¶…å£°æ³¢æ¨¡å—	
+	ÊÖ»úÀ¶ÑÀAPPµØÃæÕ¾	
+		PA21-UART2-TXD	À¶ÑÀ´®¿ÚÄ£¿éRXD
+		PA22-->UART2-RXD	À¶ÑÀ´®¿ÚÄ£¿éTXD
+	US100³¬Éù²¨Ä£¿é	
 		PB2-UART3-TXD	US100-TX/TRIG
 		PB3-->UART3-RXD	US100-RX/ECHO
-	12è·¯ç°åº¦ä¼ æ„Ÿå™¨FPC	
+	12Â·»Ò¶È´«¸ĞÆ÷FPC	
 	  PA31-->P1
 		PA28-->P2
 		PA1-->P3
@@ -26,27 +26,27 @@
 		PB18-->P10
 		PA16-->P11
 		PB13-->P12
-	ç”µæœºæ§åˆ¶MPWM	
-		PA4-A0-PWM-CH3	  å³è¾¹ç”µæœºè°ƒé€ŸINA1
-		PA7-->A0-PWM-CH2	å³è¾¹ç”µæœºè°ƒé€ŸINA2
-		PA3-->A0-PWM-CH1	å·¦è¾¹ç”µæœºè°ƒé€ŸINB1
-		PB14-->A0-PWM-CH0	å·¦è¾¹ç”µæœºè°ƒé€ŸINB2		
-	èˆµæœºæ§åˆ¶SPWM	
-		PA15-A1-PWM-CH0	  é¢„ç•™1
-		PB1-->A1-PWM-CH1	é¢„ç•™2
-		PA23-->G7-PWM-CH0	é¢„ç•™3
-		PA2-->G7-PWM-CH1	å‰è½®èˆµæœºè½¬å‘æ§åˆ¶PWM
-	ç¼–ç å™¨æµ‹é€ŸENC	
-		PB4-RIGHT-PULSE	  å³è¾¹ç”µæœºè„‰å†²å€é¢‘è¾“å‡ºP1
-		PB5-->LEFT-PULSE	å·¦è¾¹ç”µæœºè„‰å†²å€é¢‘è¾“å‡ºP2
-		PB6-->RIGHT-DIR	  å³è¾¹ç”µæœºè„‰å†²é‰´ç›¸è¾“å‡ºD1
-		PB7-->LEFT-DIR	  å·¦è¾¹ç”µæœºè„‰å†²é‰´ç›¸è¾“å‡ºD2
-	å¤–ç½®IMUæ¥å£IMU	
+	µç»ú¿ØÖÆMPWM	
+		PA4-A0-PWM-CH3	  ÓÒ±ßµç»úµ÷ËÙINA1
+		PA7-->A0-PWM-CH2	ÓÒ±ßµç»úµ÷ËÙINA2
+		PA3-->A0-PWM-CH1	×ó±ßµç»úµ÷ËÙINB1
+		PB14-->A0-PWM-CH0	×ó±ßµç»úµ÷ËÙINB2		
+	¶æ»ú¿ØÖÆSPWM	
+		PA15-A1-PWM-CH0	  Ô¤Áô1
+		PB1-->A1-PWM-CH1	Ô¤Áô2
+		PA23-->G7-PWM-CH0	Ô¤Áô3
+		PA2-->G7-PWM-CH1	Ç°ÂÖ¶æ»ú×ªÏò¿ØÖÆPWM
+	±àÂëÆ÷²âËÙENC	
+		PB4-RIGHT-PULSE	  ÓÒ±ßµç»úÂö³å±¶ÆµÊä³öP1
+		PB5-->LEFT-PULSE	×ó±ßµç»úÂö³å±¶ÆµÊä³öP2
+		PB6-->RIGHT-DIR	  ÓÒ±ßµç»úÂö³å¼øÏàÊä³öD1
+		PB7-->LEFT-DIR	  ×ó±ßµç»úÂö³å¼øÏàÊä³öD2
+	ÍâÖÃIMU½Ó¿ÚIMU	
 		PA29-I2C-SCL	MPU6050-SCL
 		PA30-->I2C-SDA	MPU6050-SDA
-		PB0-->HEATER	æ¸©æ§IOå¯é€‰
-	ç”µæ± ç”µå‹é‡‡é›†	
-		PA26-ADC-VBAT	éœ€è¦å¤–éƒ¨åˆ†å‹åæ‰å…è®¸æ¥å…¥
+		PB0-->HEATER	ÎÂ¿ØIO¿ÉÑ¡
+	µç³ØµçÑ¹²É¼¯	
+		PA26-ADC-VBAT	ĞèÒªÍâ²¿·ÖÑ¹ºó²ÅÔÊĞí½ÓÈë
 ****************************************************************************************/
 
 #include "ti_msp_dl_config.h"
@@ -55,30 +55,30 @@
 
 int main(void)
 {
-	usart_irq_config();         //ä¸²å£ä¸­æ–­é…ç½®
-  SYSCFG_DL_init();	      		//ç³»ç»Ÿèµ„æºé…ç½®åˆå§‹åŒ–	
-	ncontroller_set_priority(); //ä¸­æ–­ä¼˜å…ˆçº§è®¾ç½®	
-	OLED_Init();						    //æ˜¾ç¤ºå±åˆå§‹åŒ–
-	nADC_Init();					      //ADCåˆå§‹åŒ–
-	nGPIO_Init();						    //èœ‚é¸£å™¨åˆå§‹åŒ–
-	w25qxx_gpio_init();         //æ¿è½½w25q64åˆå§‹åŒ–
-	ctrl_params_init();			    //æ§åˆ¶å‚æ•°åˆå§‹åŒ–
-	trackless_params_init();    //ç¡¬ä»¶é…ç½®åˆå§‹åŒ–
-	simulation_pwm_init();      //æ¨¡æ‹ŸPWMåˆå§‹åŒ–
-	rc_range_init();				    //é¥æ§å™¨è¡Œç¨‹åˆå§‹åŒ–
-	rangefinder_init();			    //æµ‹è·ä¼ æ„Ÿå™¨-uart3
-	while(ICM206xx_Init());	    //åŠ é€Ÿåº¦è®¡/é™€èºä»ªåˆå§‹åŒ–
-	rgb_init();							    //RGBç¯åˆå§‹åŒ–	
-	Encoder_Init();					    //ç¼–ç å™¨èµ„æºåˆå§‹åŒ–
-	Button_Init();					    //æ¿è½½æŒ‰é”®åˆå§‹åŒ–
-	PPM_Init();							    //æ¥æ”¶æœºPPMä¿¡å·åˆå§‹åŒ–
+	usart_irq_config();         //´®¿ÚÖĞ¶ÏÅäÖÃ
+  SYSCFG_DL_init();	      		//ÏµÍ³×ÊÔ´ÅäÖÃ³õÊ¼»¯	
+	ncontroller_set_priority(); //ÖĞ¶ÏÓÅÏÈ¼¶ÉèÖÃ	
+	OLED_Init();						    //ÏÔÊ¾ÆÁ³õÊ¼»¯
+	nADC_Init();					      //ADC³õÊ¼»¯
+	nGPIO_Init();						    //·äÃùÆ÷³õÊ¼»¯
+	w25qxx_gpio_init();         //°åÔØw25q64³õÊ¼»¯
+	ctrl_params_init();			    //¿ØÖÆ²ÎÊı³õÊ¼»¯
+	trackless_params_init();    //Ó²¼şÅäÖÃ³õÊ¼»¯
+	simulation_pwm_init();      //Ä£ÄâPWM³õÊ¼»¯
+	rc_range_init();				    //Ò£¿ØÆ÷ĞĞ³Ì³õÊ¼»¯
+	rangefinder_init();			    //²â¾à´«¸ĞÆ÷-uart3
+	while(ICM206xx_Init());	    //¼ÓËÙ¶È¼Æ/ÍÓÂİÒÇ³õÊ¼»¯
+	rgb_init();							    //RGBµÆ³õÊ¼»¯	
+	Encoder_Init();					    //±àÂëÆ÷×ÊÔ´³õÊ¼»¯
+	Button_Init();					    //°åÔØ°´¼ü³õÊ¼»¯
+	PPM_Init();							    //½ÓÊÕ»úPPMĞÅºÅ³õÊ¼»¯
 	timer_irq_config();
   while(1)
   {
-		screen_display();//å±å¹•æ˜¾ç¤º
-		adc_statemachine();//adcé‡‡é›†çŠ¶æ€æœº
-		DebugIF_ProcessCmd();//è°ƒè¯•æŒ‡ä»¤å¤„ç†
-		DebugIF_FlushTelemetry();//é¥æµ‹è¾“å‡º(éé˜»å¡)
+		screen_display();//ÆÁÄ»ÏÔÊ¾
+		adc_statemachine();//adc²É¼¯×´Ì¬»ú
+		DebugIF_ProcessCmd();//µ÷ÊÔÖ¸Áî´¦Àí
+		DebugIF_FlushTelemetry();//Ò£²âÊä³ö(·Ç×èÈû)
   }
 }
 
@@ -87,61 +87,61 @@ int main(void)
 
 
 /***************************************
-å‡½æ•°å:	void duty_200hz(void)
-è¯´æ˜: 200hzå®æ—¶ä»»åŠ¡å‡½æ•°
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû:	void duty_200hz(void)
+ËµÃ÷: 200hzÊµÊ±ÈÎÎñº¯Êı
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ***************************************/
 void maple_duty_200hz(void)
 {
-	rc_data_input();							 //é¥æ§å™¨PPMæ•°æ®å¤„ç†
-	get_wheel_speed();					   //è·å–è½®èƒè½¬é€Ÿ
-	sdk_duty_run();					  		 //SDKæ€»ä»»åŠ¡æ§åˆ¶
-	motor_output(speed_ctrl_mode); //æ§åˆ¶å™¨è¾“å‡º
-	rangefinder_statemachine();		 //è¶…å£°æ³¢ä¼ æ„Ÿå™¨æ•°æ®è·å–
-	imu_data_sampling();					 //åŠ é€Ÿåº¦è®¡ã€é™€èºä»ªæ•°æ®è·é‡‡é›†
-	get_battery_voltage();				 //ADCæ•°æ®è·å–
-	trackless_ahrs_update();			 //ahrså§¿æ€æ›´æ–°
-	imu_temperature_ctrl();				 //ä¼ æ„Ÿå™¨æ’æ¸©æ§åˆ¶
-	read_button_state_all();       //æŒ‰é”®çŠ¶æ€è¯»å–
-	battery_voltage_detection();	 //ç”µæ± ç”µå‹æ£€æµ‹
-  laser_light_work(&beep);       //ç”µæºæ¿èœ‚é¸£å™¨é©±åŠ¨
-	bling_working(0);							 //RGBç¯çŠ¶æ€æœº
+	rc_data_input();							 //Ò£¿ØÆ÷PPMÊı¾İ´¦Àí
+	get_wheel_speed();					   //»ñÈ¡ÂÖÌ¥×ªËÙ
+	sdk_duty_run();					  		 //SDK×ÜÈÎÎñ¿ØÖÆ
+	motor_output(speed_ctrl_mode); //¿ØÖÆÆ÷Êä³ö
+	rangefinder_statemachine();		 //³¬Éù²¨´«¸ĞÆ÷Êı¾İ»ñÈ¡
+	imu_data_sampling();					 //¼ÓËÙ¶È¼Æ¡¢ÍÓÂİÒÇÊı¾İ»ñ²É¼¯
+	get_battery_voltage();				 //ADCÊı¾İ»ñÈ¡
+	trackless_ahrs_update();			 //ahrs×ËÌ¬¸üĞÂ
+	imu_temperature_ctrl();				 //´«¸ĞÆ÷ºãÎÂ¿ØÖÆ
+	read_button_state_all();       //°´¼ü×´Ì¬¶ÁÈ¡
+	battery_voltage_detection();	 //µç³ØµçÑ¹¼ì²â
+  laser_light_work(&beep);       //µçÔ´°å·äÃùÆ÷Çı¶¯
+	bling_working(0);							 //RGBµÆ×´Ì¬»ú
 }
 
 /***************************************
-å‡½æ•°å:	void duty_1000hz(void)
-è¯´æ˜: 1000hzå®æ—¶ä»»åŠ¡å‡½æ•°
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû:	void duty_1000hz(void)
+ËµÃ÷: 1000hzÊµÊ±ÈÎÎñº¯Êı
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ***************************************/
 void duty_1000hz(void)
 {
 	if(sdk_work_mode==15)
 	{
-		gpio_input_check_channel_12_with_handle();//æ£€æµ‹12è·¯ç°åº¦ç°åº¦ç®¡çŠ¶æ€,å¸¦èµ›é“ä¿¡æ¯å¤„ç†
+		gpio_input_check_channel_12_with_handle();//¼ì²â12Â·»Ò¶È»Ò¶È¹Ü×´Ì¬,´øÈüµÀĞÅÏ¢´¦Àí
 	}
 	else
 	{
-		//gpio_input_check_channel_12();//æ£€æµ‹12è·¯ç°åº¦ç°åº¦ç®¡çŠ¶æ€
+		//gpio_input_check_channel_12();//¼ì²â12Â·»Ò¶È»Ò¶È¹Ü×´Ì¬
 		gpio_input_check_channel_12_2024();
 	}
-	gpio_input_check_from_vision();//openmvæœºå™¨è§†è§‰ä¿¡æ¯è·å–
-	simulation_pwm_output();//æ¨¡æ‹Ÿpwmè¾“å‡º
+	gpio_input_check_from_vision();//openmv»úÆ÷ÊÓ¾õĞÅÏ¢»ñÈ¡
+	simulation_pwm_output();//Ä£ÄâpwmÊä³ö
 }
 
 
 /***************************************
-å‡½æ•°å:	void duty_100hz(void)
-è¯´æ˜: 100hzå®æ—¶ä»»åŠ¡å‡½æ•°
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû:	void duty_100hz(void)
+ËµÃ÷: 100hzÊµÊ±ÈÎÎñº¯Êı
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ***************************************/
 void duty_100hz(void)
 {
@@ -151,16 +151,16 @@ void duty_100hz(void)
 
 
 /***************************************
-å‡½æ•°å:	void duty_10hz(void)
-è¯´æ˜: 10hzå®æ—¶ä»»åŠ¡å‡½æ•°
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû:	void duty_10hz(void)
+ËµÃ÷: 10hzÊµÊ±ÈÎÎñº¯Êı
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ***************************************/
 void duty_10hz(void)
 {
-	//æ‰‹æœºç«¯appåœ°é¢ç«™å‘é€	
+	//ÊÖ»ú¶ËappµØÃæÕ¾·¢ËÍ	
 	bluetooth_app_send(smartcar_imu.rpy_deg[ROL],
 										 smartcar_imu.rpy_deg[PIT],
 										 smartcar_imu.rpy_deg[YAW],

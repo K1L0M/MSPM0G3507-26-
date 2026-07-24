@@ -15,15 +15,15 @@
 
 
 
-#define  USER_INT0  0x00   //PPM     Ò£ï¿½ï¿½ï¿½ï¿½PPMï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½  0x00<<6
-#define  USER_INT1  0x20   //UART6   GPSï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½/ROSÍ¨Ñ¶ï¿½ï¿½ï¿½ï¿½	921600/460800
-#define  USER_INT2  0x40   //UART0   ï¿½×²ï¿½OPENMVï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½	256000
-                           //UART3   Ç°ï¿½ï¿½OPENMVï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½	256000
+#define  USER_INT0  0x00   //PPM     Ò£¿ØÆ÷PPMÊý¾Ý½âÎö  0x00<<6
+#define  USER_INT1  0x20   //UART6   GPSÊý¾Ý½âÎö/ROSÍ¨Ñ¶´®¿Ú	921600/460800
+#define  USER_INT2  0x40   //UART0   µ×²¿OPENMVÊý¾Ý½âÎö	256000
+                           //UART3   Ç°²¿OPENMVÊý¾Ý½âÎö	256000
 													 
-#define  USER_INT3  0x60   //UART7   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨Ñ¶ï¿½ï¿½ï¿½ï¿½   921600
-													 //UART1   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½Õ¾ï¿½ï¿½ï¿½ï¿½	921600
+#define  USER_INT3  0x60   //UART7   ¼¤¹â²â¾àÍ¨Ñ¶´®¿Ú   921600
+													 //UART1   ÎÞÃû´´ÐÂµØÃæÕ¾´®¿Ú	921600
 													 
-#define  USER_INT4  0x80   //UART2   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½ï¿½19200/ï¿½ï¿½ï¿½ï¿½ï¿½×´ï¿½230400
+#define  USER_INT4  0x80   //UART2   ¹âÁ÷Êý¾Ý½âÎö19200/¼¤¹âÀ×´ï230400
 #define  USER_INT5  0xA0	 //TIMER1A   1ms
 #define  USER_INT6  0xC0   //TIMER0		 5ms
 #define  USER_INT7  0xE0   //TIMER2    10ms
@@ -69,5 +69,4 @@
 #include "subtask.h"
 #include "developer_mode.h"
 #include "nclink.h"
-#include "debug_if.h"
 #endif

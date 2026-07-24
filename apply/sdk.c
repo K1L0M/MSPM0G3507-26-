@@ -8,26 +8,26 @@ controller_output trackless_output={
 	.unlock_flag=LOCK,
 };
 
-//èˆªå‘è§’åº¦ã€è§’é€Ÿåº¦æ§åˆ¶å™¨
+//º½Ïò½Ç¶È¡¢½ÇËÙ¶È¿ØÖÆÆ÷
 float	steer_angle_expect=0,steer_angle_error=0,steer_angle_output=0;
 float	steer_gyro_expect=0,steer_gyro_output=0;
 float	steer_gyro_scale=steer_gyro_scale_default;//0.5f
 
-controller steerangle_ctrl;		//è½¬å‘è§’åº¦å¤–ç¯æ§åˆ¶å™¨ç»“æ„ä½“
-controller steergyro_ctrl;		//è½¬å‘è§’é€Ÿåº¦å†…ç¯æ§åˆ¶å™¨ç»“æ„ä½“//è§’é€Ÿåº¦æ§åˆ¶å‚æ•°   1.2  0  3							 
-controller distance_ctrl,azimuth_ctrl;//ä¸¤è½®å·®é€Ÿä½ç½®ã€èˆªå‘æ§åˆ¶
+controller steerangle_ctrl;		//×ªÏò½Ç¶ÈÍâ»·¿ØÖÆÆ÷½á¹¹Ìå
+controller steergyro_ctrl;		//×ªÏò½ÇËÙ¶ÈÄÚ»·¿ØÖÆÆ÷½á¹¹Ìå//½ÇËÙ¶È¿ØÖÆ²ÎÊı   1.2  0  3							 
+controller distance_ctrl,azimuth_ctrl;//Á½ÂÖ²îËÙÎ»ÖÃ¡¢º½Ïò¿ØÖÆ
 
 /***************************************************
-å‡½æ•°å: void trackless_params_init(void)
-è¯´æ˜:	å‚æ•°åˆå§‹åŒ–
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void trackless_params_init(void)
+ËµÃ÷:	²ÎÊı³õÊ¼»¯
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void trackless_params_init(void)
 {
-	//å°è½¦ç¡¬ä»¶ç›¸å…³å‚æ•°:ç¼–ç å™¨æ–¹å‘ã€ç”µæœºé©±åŠ¨æ–¹å‘ã€è½®å­åŠå¾„ã€èˆµæœºä¸­å€¼ç­‰
+	//Ğ¡³µÓ²¼şÏà¹Ø²ÎÊı:±àÂëÆ÷·½Ïò¡¢µç»úÇı¶¯·½Ïò¡¢ÂÖ×Ó°ë¾¶¡¢¶æ»úÖĞÖµµÈ
 	float tmp_left_enc_dir,tmp_right_enc_dir,tmp_left_move_dir,tmp_right_move_dir,tmp_wheel_radius_cm,tmp_pulse_num_per_circle;
 	float tmp_servo_mid_value1,tmp_servo_mid_value2;
 	ReadFlashParameterOne(LEFT_ENC_DIR_CFG,&tmp_left_enc_dir);
@@ -47,14 +47,14 @@ void trackless_params_init(void)
 	if(isnan(tmp_servo_mid_value1)==0) 			trackless_motor.servo_median_value1=tmp_servo_mid_value1;				else trackless_motor.servo_median_value1=servo_median_value1_default;
 	if(isnan(tmp_servo_mid_value2)==0)			trackless_motor.servo_median_value2=tmp_servo_mid_value2;				else trackless_motor.servo_median_value2=servo_median_value2_default;
 	
-	//é€Ÿåº¦æ§åˆ¶ç›¸å…³å‚æ•°:æœŸæœ›é€Ÿåº¦ã€å·¥ä½œæ¨¡å¼
+	//ËÙ¶È¿ØÖÆÏà¹Ø²ÎÊı:ÆÚÍûËÙ¶È¡¢¹¤×÷Ä£Ê½
 	float tmp_speed_setup=0,tmp_work_mode=0;
 	ReadFlashParameterOne(SPEED_SETUP,&tmp_speed_setup);
 	ReadFlashParameterOne(WORK_MODE,&tmp_work_mode);
 	if(isnan(tmp_speed_setup)==0) speed_setup=tmp_speed_setup;else speed_setup=speed_expect_default;
 	if(isnan(tmp_work_mode)==0) 	sdk_work_mode=tmp_work_mode;		else sdk_work_mode=work_mode_default;
 	
-	//è½¬å‘æ§åˆ¶ç›¸å…³å‚æ•°:è§’åº¦/è§’é€Ÿåº¦pid
+	//×ªÏò¿ØÖÆÏà¹Ø²ÎÊı:½Ç¶È/½ÇËÙ¶Èpid
 	float tmp_turn_kp[2],tmp_turn_ki[2],tmp_turn_kd[2],tmp_turn_scale;
 	float tmp_steer_gyro_kp,tmp_steer_gyro_ki,tmp_steer_gyro_kd,tmp_steer_gyro_scale;
 	ReadFlashParameterThree(CTRL_TURN_KP1,&tmp_turn_kp[0],&tmp_turn_ki[0],&tmp_turn_kd[0]);
@@ -77,14 +77,14 @@ void trackless_params_init(void)
 	if(isnan(tmp_steer_gyro_kd)==0) 	 steergyro_ctrl.kd	 =tmp_steer_gyro_kd;		else steergyro_ctrl.kd   =steer_gyro_kd_default;
 	if(isnan(tmp_steer_gyro_scale)==0) steer_gyro_scale=tmp_steer_gyro_scale; else steer_gyro_scale=steer_gyro_scale_default;	
 	
-	//é€Ÿåº¦æ§åˆ¶pidå‚æ•°
+	//ËÙ¶È¿ØÖÆpid²ÎÊı
 	float tmp_speed_kp,tmp_speed_ki,tmp_speed_kd;
 	ReadFlashParameterThree(CTRL_SPEED_KP,&tmp_speed_kp,&tmp_speed_ki,&tmp_speed_kd);
 	//
 	if(isnan(tmp_speed_kp)==0) 				 speed_kp=tmp_speed_kp;		else speed_kp   =speed_kp_default;
 	if(isnan(tmp_speed_ki)==0) 				 speed_ki=tmp_speed_ki;		else speed_ki   =speed_ki_default;	
 	if(isnan(tmp_speed_kd)==0) 				 speed_kd=tmp_speed_kd;		else speed_kd   =speed_kd_default;
-  //å¹³è¡¡æ§åˆ¶pidå‚æ•°
+  //Æ½ºâ¿ØÖÆpid²ÎÊı
 	float tmp_balance_kp,tmp_balance_ki,tmp_balance_kd,tmp_balance_angle;
 	float tmp_balance_gyro_kp,tmp_balance_gyro_ki,tmp_balance_gyro_kd;
 	
@@ -100,14 +100,14 @@ void trackless_params_init(void)
 	if(isnan(tmp_balance_gyro_ki)==0) 			selfbalance_gyro_ctrl.ki=tmp_balance_gyro_ki;		     else selfbalance_gyro_ctrl.ki     =balance_gyro_ki_default;	
 	if(isnan(tmp_balance_gyro_kd)==0) 			selfbalance_gyro_ctrl.kd=tmp_balance_gyro_kd;		     else selfbalance_gyro_ctrl.kd     =balance_gyro_kd_default;
 	
-	//å¹³è¡¡é€Ÿåº¦æ§åˆ¶pidå‚æ•°
+	//Æ½ºâËÙ¶È¿ØÖÆpid²ÎÊı
 	float tmp_bspeed_kp,tmp_bspeed_ki,tmp_bspeed_kd;
 	ReadFlashParameterThree(CTRL_BALANCE_SPEED_KP,&tmp_bspeed_kp,&tmp_bspeed_ki,&tmp_bspeed_kd);
 	if(isnan(tmp_bspeed_kp)==0) 				 balance_speed_kp=tmp_bspeed_kp;		else balance_speed_kp   =balance_speed_kp_default;
 	if(isnan(tmp_bspeed_ki)==0) 				 balance_speed_ki=tmp_bspeed_ki;		else balance_speed_ki   =balance_speed_ki_default;	
 	if(isnan(tmp_bspeed_kd)==0) 				 balance_speed_kd=tmp_bspeed_kd;		else balance_speed_kd   =balance_speed_kd_default;
 	
-	//å¹³è¡¡é€Ÿåº¦ä¸­é€Ÿåº¦ã€è½¬å‘ä½¿èƒ½å‚æ•°
+	//Æ½ºâËÙ¶ÈÖĞËÙ¶È¡¢×ªÏòÊ¹ÄÜ²ÎÊı
 	float bspeed_ctrl_enable,bsteer_ctrl_enable,bctrl_number;
 	ReadFlashParameterOne(BALANCE_VEL_CTRL_ENABLE,&bspeed_ctrl_enable);
 	ReadFlashParameterOne(BALANCE_DIR_CTRL_ENABLE,&bsteer_ctrl_enable);
@@ -117,7 +117,7 @@ void trackless_params_init(void)
 	if(isnan(bctrl_number)==0) 	        balance_ctrl_loop_num=bctrl_number;		          else balance_ctrl_loop_num       =balance_ctrl_number_enable_default;
 	
 	
-	//é¢„ç•™å‚æ•°
+	//Ô¤Áô²ÎÊı
 	float tmp_reserved_params[20];
 	for(uint16_t i=0;i<20;i++)
 	{
@@ -146,7 +146,7 @@ void trackless_params_init(void)
 	if(isnan(tmp_reserved_params[18])==0) 	steerangle_ctrl.kd=tmp_reserved_params[18];
 	if(isnan(tmp_reserved_params[19])==0) 	steerangle_ctrl.kp=tmp_reserved_params[19];
 
- //ç”µæ± ä½å‹æŠ¥è­¦å‚æ•°
+ //µç³ØµÍÑ¹±¨¾¯²ÎÊı
 	float tmp_vbat_enable,tmp_vbat_upper,tmp_vbat_lower;
 	ReadFlashParameterThree(NO_VOLTAGE_ENABLE,&tmp_vbat_enable,&tmp_vbat_upper,&tmp_vbat_lower);		
 	if(isnan(tmp_vbat_enable)==0) 	vbat.enable=tmp_vbat_enable;		else vbat.enable=no_voltage_enable_default;
@@ -155,144 +155,144 @@ void trackless_params_init(void)
 }
 
 /***************************************************
-å‡½æ•°å: void ctrl_params_init(void)
-è¯´æ˜:	pidæ§åˆ¶å™¨å‚æ•°åˆå§‹åŒ–
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void ctrl_params_init(void)
+ËµÃ÷:	pid¿ØÖÆÆ÷²ÎÊı³õÊ¼»¯
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void ctrl_params_init(void)
 {
-	pid_control_init(&seektrack_ctrl[0],//å¾…åˆå§‹åŒ–æ§åˆ¶å™¨ç»“æ„ä½“
-										turn_kp_default1,//æ¯”ä¾‹å‚æ•°
-										turn_ki_default1,//ç§¯åˆ†å‚æ•°
-										turn_kd_default1,//å¾®åˆ†å‚æ•°
-										20, //åå·®é™å¹…å€¼
-										0,  //ç§¯åˆ†é™å¹…å€¼
-										500,//æ§åˆ¶å™¨è¾“å‡ºé™å¹…å€¼
-										1,	//åå·®é™å¹…æ ‡å¿—ä½
-										0,0,//ç§¯åˆ†åˆ†ç¦»æ ‡å¿—ä½ä¸å¼•å…¥ç§¯åˆ†æ§åˆ¶æ—¶çš„é™å¹…å€¼
-										6); //å¾®åˆ†é—´éš”æ—¶é—´
+	pid_control_init(&seektrack_ctrl[0],//´ı³õÊ¼»¯¿ØÖÆÆ÷½á¹¹Ìå
+										turn_kp_default1,//±ÈÀı²ÎÊı
+										turn_ki_default1,//»ı·Ö²ÎÊı
+										turn_kd_default1,//Î¢·Ö²ÎÊı
+										20, //Æ«²îÏŞ·ùÖµ
+										0,  //»ı·ÖÏŞ·ùÖµ
+										500,//¿ØÖÆÆ÷Êä³öÏŞ·ùÖµ
+										1,	//Æ«²îÏŞ·ù±êÖ¾Î»
+										0,0,//»ı·Ö·ÖÀë±êÖ¾Î»ÓëÒıÈë»ı·Ö¿ØÖÆÊ±µÄÏŞ·ùÖµ
+										6); //Î¢·Ö¼ä¸ôÊ±¼ä
 	
 
-	pid_control_init(&seektrack_ctrl[1],//å¾…åˆå§‹åŒ–æ§åˆ¶å™¨ç»“æ„ä½“
-										turn_kp_default2,//æ¯”ä¾‹å‚æ•°
-										turn_ki_default2,//ç§¯åˆ†å‚æ•°
-										turn_kd_default2,//å¾®åˆ†å‚æ•°
-										20, //åå·®é™å¹…å€¼
-										0,  //ç§¯åˆ†é™å¹…å€¼
-										500,//æ§åˆ¶å™¨è¾“å‡ºé™å¹…å€¼
-										1,	//åå·®é™å¹…æ ‡å¿—ä½
-										0,0,//ç§¯åˆ†åˆ†ç¦»æ ‡å¿—ä½ä¸å¼•å…¥ç§¯åˆ†æ§åˆ¶æ—¶çš„é™å¹…å€¼
-										1); //å¾®åˆ†é—´éš”æ—¶é—´
+	pid_control_init(&seektrack_ctrl[1],//´ı³õÊ¼»¯¿ØÖÆÆ÷½á¹¹Ìå
+										turn_kp_default2,//±ÈÀı²ÎÊı
+										turn_ki_default2,//»ı·Ö²ÎÊı
+										turn_kd_default2,//Î¢·Ö²ÎÊı
+										20, //Æ«²îÏŞ·ùÖµ
+										0,  //»ı·ÖÏŞ·ùÖµ
+										500,//¿ØÖÆÆ÷Êä³öÏŞ·ùÖµ
+										1,	//Æ«²îÏŞ·ù±êÖ¾Î»
+										0,0,//»ı·Ö·ÖÀë±êÖ¾Î»ÓëÒıÈë»ı·Ö¿ØÖÆÊ±µÄÏŞ·ùÖµ
+										1); //Î¢·Ö¼ä¸ôÊ±¼ä
 
-	pid_control_init(&selfbalance_angle1_ctrl,//å¾…åˆå§‹åŒ–æ§åˆ¶å™¨ç»“æ„ä½“
-									 balance_angle_kp1_default,//æ¯”ä¾‹å‚æ•°
-									 balance_angle_ki1_default,//ç§¯åˆ†å‚æ•°
-									 balance_angle_kd1_default,//å¾®åˆ†å‚æ•°
-									 30, //åå·®é™å¹…å€¼
-									 0,  //ç§¯åˆ†é™å¹…å€¼
-									 999,//æ§åˆ¶å™¨è¾“å‡ºé™å¹…å€¼
-									 1,	 //åå·®é™å¹…æ ‡å¿—ä½
-									 0,0,//ç§¯åˆ†åˆ†ç¦»æ ‡å¿—ä½ä¸å¼•å…¥ç§¯åˆ†æ§åˆ¶æ—¶çš„é™å¹…å€¼
-									 1); //å¾®åˆ†é—´éš”æ—¶é—´
+	pid_control_init(&selfbalance_angle1_ctrl,//´ı³õÊ¼»¯¿ØÖÆÆ÷½á¹¹Ìå
+									 balance_angle_kp1_default,//±ÈÀı²ÎÊı
+									 balance_angle_ki1_default,//»ı·Ö²ÎÊı
+									 balance_angle_kd1_default,//Î¢·Ö²ÎÊı
+									 30, //Æ«²îÏŞ·ùÖµ
+									 0,  //»ı·ÖÏŞ·ùÖµ
+									 999,//¿ØÖÆÆ÷Êä³öÏŞ·ùÖµ
+									 1,	 //Æ«²îÏŞ·ù±êÖ¾Î»
+									 0,0,//»ı·Ö·ÖÀë±êÖ¾Î»ÓëÒıÈë»ı·Ö¿ØÖÆÊ±µÄÏŞ·ùÖµ
+									 1); //Î¢·Ö¼ä¸ôÊ±¼ä
 									 
-	pid_control_init(&selfbalance_gyro_ctrl,//å¾…åˆå§‹åŒ–æ§åˆ¶å™¨ç»“æ„ä½“
-									 balance_gyro_kp_default,//æ¯”ä¾‹å‚æ•°
-									 balance_gyro_ki_default,//ç§¯åˆ†å‚æ•°
-									 balance_gyro_kd_default,//å¾®åˆ†å‚æ•°
-										500, //åå·®é™å¹…å€¼
-										300, //ç§¯åˆ†é™å¹…å€¼
-										999, //æ§åˆ¶å™¨è¾“å‡ºé™å¹…å€¼
-										1,  	//åå·®é™å¹…æ ‡å¿—ä½
-										0,0, //ç§¯åˆ†åˆ†ç¦»æ ‡å¿—ä½ä¸å¼•å…¥ç§¯åˆ†æ§åˆ¶æ—¶çš„é™å¹…å€¼
-										1);  //å¾®åˆ†é—´éš”æ—¶é—´	
+	pid_control_init(&selfbalance_gyro_ctrl,//´ı³õÊ¼»¯¿ØÖÆÆ÷½á¹¹Ìå
+									 balance_gyro_kp_default,//±ÈÀı²ÎÊı
+									 balance_gyro_ki_default,//»ı·Ö²ÎÊı
+									 balance_gyro_kd_default,//Î¢·Ö²ÎÊı
+										500, //Æ«²îÏŞ·ùÖµ
+										300, //»ı·ÖÏŞ·ùÖµ
+										999, //¿ØÖÆÆ÷Êä³öÏŞ·ùÖµ
+										1,  	//Æ«²îÏŞ·ù±êÖ¾Î»
+										0,0, //»ı·Ö·ÖÀë±êÖ¾Î»ÓëÒıÈë»ı·Ö¿ØÖÆÊ±µÄÏŞ·ùÖµ
+										1);  //Î¢·Ö¼ä¸ôÊ±¼ä	
 
-	pid_control_init(&steerangle_ctrl,//å¾…åˆå§‹åŒ–æ§åˆ¶å™¨ç»“æ„ä½“
-										5.0f,//æ¯”ä¾‹å‚æ•°
-										0,	 //ç§¯åˆ†å‚æ•°
-										0,	 //å¾®åˆ†å‚æ•°
-										50,  //åå·®é™å¹…å€¼
-										0,   //ç§¯åˆ†é™å¹…å€¼
-										500, //æ§åˆ¶å™¨è¾“å‡ºé™å¹…å€¼
-										1,   //åå·®é™å¹…æ ‡å¿—ä½
-										0,0, //ç§¯åˆ†åˆ†ç¦»æ ‡å¿—ä½ä¸å¼•å…¥ç§¯åˆ†æ§åˆ¶æ—¶çš„é™å¹…å€¼
-										1);  //å¾®åˆ†é—´éš”æ—¶é—´
+	pid_control_init(&steerangle_ctrl,//´ı³õÊ¼»¯¿ØÖÆÆ÷½á¹¹Ìå
+										5.0f,//±ÈÀı²ÎÊı
+										0,	 //»ı·Ö²ÎÊı
+										0,	 //Î¢·Ö²ÎÊı
+										50,  //Æ«²îÏŞ·ùÖµ
+										0,   //»ı·ÖÏŞ·ùÖµ
+										500, //¿ØÖÆÆ÷Êä³öÏŞ·ùÖµ
+										1,   //Æ«²îÏŞ·ù±êÖ¾Î»
+										0,0, //»ı·Ö·ÖÀë±êÖ¾Î»ÓëÒıÈë»ı·Ö¿ØÖÆÊ±µÄÏŞ·ùÖµ
+										1);  //Î¢·Ö¼ä¸ôÊ±¼ä
 
-	pid_control_init(&steergyro_ctrl,//å¾…åˆå§‹åŒ–æ§åˆ¶å™¨ç»“æ„ä½“
-										steer_gyro_kp_default,//æ¯”ä¾‹å‚æ•°
-										steer_gyro_ki_default,//ç§¯åˆ†å‚æ•°
-										steer_gyro_kd_default,//å¾®åˆ†å‚æ•°
-										200, //åå·®é™å¹…å€¼
-										300, //ç§¯åˆ†é™å¹…å€¼
-										500, //æ§åˆ¶å™¨è¾“å‡ºé™å¹…å€¼
-										1,  	//åå·®é™å¹…æ ‡å¿—ä½
-										0,0, //ç§¯åˆ†åˆ†ç¦»æ ‡å¿—ä½ä¸å¼•å…¥ç§¯åˆ†æ§åˆ¶æ—¶çš„é™å¹…å€¼
-										1);  //å¾®åˆ†é—´éš”æ—¶é—´
+	pid_control_init(&steergyro_ctrl,//´ı³õÊ¼»¯¿ØÖÆÆ÷½á¹¹Ìå
+										steer_gyro_kp_default,//±ÈÀı²ÎÊı
+										steer_gyro_ki_default,//»ı·Ö²ÎÊı
+										steer_gyro_kd_default,//Î¢·Ö²ÎÊı
+										200, //Æ«²îÏŞ·ùÖµ
+										300, //»ı·ÖÏŞ·ùÖµ
+										500, //¿ØÖÆÆ÷Êä³öÏŞ·ùÖµ
+										1,  	//Æ«²îÏŞ·ù±êÖ¾Î»
+										0,0, //»ı·Ö·ÖÀë±êÖ¾Î»ÓëÒıÈë»ı·Ö¿ØÖÆÊ±µÄÏŞ·ùÖµ
+										1);  //Î¢·Ö¼ä¸ôÊ±¼ä
 	
-	pid_control_init(&distance_ctrl,//å¾…åˆå§‹åŒ–æ§åˆ¶å™¨ç»“æ„ä½“
-										0.5,//æ¯”ä¾‹å‚æ•°
-										0,//ç§¯åˆ†å‚æ•°
-										0,//å¾®åˆ†å‚æ•°
-										75, //åå·®é™å¹…å€¼
-										0, //ç§¯åˆ†é™å¹…å€¼
-										500, //æ§åˆ¶å™¨è¾“å‡ºé™å¹…å€¼
-										1,  	//åå·®é™å¹…æ ‡å¿—ä½
-										0,0, //ç§¯åˆ†åˆ†ç¦»æ ‡å¿—ä½ä¸å¼•å…¥ç§¯åˆ†æ§åˆ¶æ—¶çš„é™å¹…å€¼
-										1);  //å¾®åˆ†é—´éš”æ—¶é—´
+	pid_control_init(&distance_ctrl,//´ı³õÊ¼»¯¿ØÖÆÆ÷½á¹¹Ìå
+										0.5,//±ÈÀı²ÎÊı
+										0,//»ı·Ö²ÎÊı
+										0,//Î¢·Ö²ÎÊı
+										75, //Æ«²îÏŞ·ùÖµ
+										0, //»ı·ÖÏŞ·ùÖµ
+										500, //¿ØÖÆÆ÷Êä³öÏŞ·ùÖµ
+										1,  	//Æ«²îÏŞ·ù±êÖ¾Î»
+										0,0, //»ı·Ö·ÖÀë±êÖ¾Î»ÓëÒıÈë»ı·Ö¿ØÖÆÊ±µÄÏŞ·ùÖµ
+										1);  //Î¢·Ö¼ä¸ôÊ±¼ä
 	azimuth_ctrl=steerangle_ctrl;	
 }
 
 /***************************************************
-å‡½æ•°å: void steer_angle_ctrl(void)
-è¯´æ˜:	èˆªå‘è§’åº¦æ§åˆ¶
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void steer_angle_ctrl(void)
+ËµÃ÷:	º½Ïò½Ç¶È¿ØÖÆ
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void steer_angle_ctrl(void)
 {
-	//è§’åº¦æ§åˆ¶
+	//½Ç¶È¿ØÖÆ
 	steerangle_ctrl.expect=steer_angle_expect;
 	steerangle_ctrl.feedback=smartcar_imu.rpy_deg[_YAW];
 	float raw_error=steerangle_ctrl.expect-steerangle_ctrl.feedback;
-	/***********************åèˆªè§’åå·®è¶…è¿‡+-180å¤„ç†*****************************/
+	/***********************Æ«º½½ÇÆ«²î³¬¹ı+-180´¦Àí*****************************/
 	if(raw_error<-180) raw_error=raw_error+360;
 	if(raw_error> 180) raw_error=raw_error-360;
 	float p_term=steerangle_ctrl.kp*constrain_float(raw_error,-50,50);
 	float d_term=steerangle_ctrl.kd*(raw_error-steerangle_ctrl.last_error);
 	steer_angle_output=constrain_float(p_term+d_term,-500,500);
-	//è®°å½•åå·®å€¼,ç”¨äºåˆ¤æ–­è½¬å‘æ‰§è¡ŒçŠ¶æ€
+	//¼ÇÂ¼Æ«²îÖµ,ÓÃÓÚÅĞ¶Ï×ªÏòÖ´ĞĞ×´Ì¬
 	steerangle_ctrl.last_error=raw_error;
 	steerangle_ctrl.error=raw_error;
 	steer_angle_error=raw_error;
 }
 
 /***************************************************
-å‡½æ•°å: void steer_gyro_ctrl(void)
-è¯´æ˜:	èˆªå‘è§’é€Ÿåº¦æ§åˆ¶
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void steer_gyro_ctrl(void)
+ËµÃ÷:	º½Ïò½ÇËÙ¶È¿ØÖÆ
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void steer_gyro_ctrl(void)
 {
-	steergyro_ctrl.expect=steer_gyro_expect;//æœŸæœ›
-	steergyro_ctrl.feedback=smartcar_imu.yaw_gyro_enu;//åèˆªè§’åº¦åé¦ˆ
-	pid_control_run(&steergyro_ctrl);		  //æ§åˆ¶å™¨è¿ç®—
+	steergyro_ctrl.expect=steer_gyro_expect;//ÆÚÍû
+	steergyro_ctrl.feedback=smartcar_imu.yaw_gyro_enu;//Æ«º½½Ç¶È·´À¡
+	pid_control_run(&steergyro_ctrl);		  //¿ØÖÆÆ÷ÔËËã
 	steer_gyro_output=steergyro_ctrl.output;	
 }
 
 /***************************************************
-å‡½æ•°å: void steer_control(float *output)
-è¯´æ˜:	èˆªå‘æ§åˆ¶
-å…¥å£:	float *output-æ§åˆ¶å™¨è¾“å‡ºæŒ‡é’ˆ
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void steer_control(float *output)
+ËµÃ÷:	º½Ïò¿ØÖÆ
+Èë¿Ú:	float *output-¿ØÖÆÆ÷Êä³öÖ¸Õë
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void steer_control(float *output)
 {
@@ -302,28 +302,28 @@ void steer_control(float *output)
 	{
 		case ROTATE:
 		{
-			if(_flight_output->yaw_outer_control_output==0)//åèˆªæ§åˆ¶æ†ç½®äºä¸­ä½
+			if(_flight_output->yaw_outer_control_output==0)//Æ«º½¿ØÖÆ¸ËÖÃÓÚÖĞÎ»
 			{
 				if(steer_angle_expect==0)
 				{
 					steer_angle_expect=smartcar_imu.rpy_deg[_YAW];
 				}
-				//è§’åº¦æ§åˆ¶
+				//½Ç¶È¿ØÖÆ
 				steer_angle_ctrl();
-				//è§’é€Ÿåº¦æœŸæœ›
+				//½ÇËÙ¶ÈÆÚÍû
 				steer_gyro_expect=steer_angle_output;				
 			}
 			else
 			{
 				steer_angle_expect=0;
-				//è§’é€Ÿåº¦æœŸæœ›
+				//½ÇËÙ¶ÈÆÚÍû
 				steer_gyro_expect=_flight_output->yaw_outer_control_output;	
 			}			
 		}
 		break;
-		case AZIMUTH://ç»å¯¹èˆªå‘è§’åº¦
+		case AZIMUTH://¾ø¶Ôº½Ïò½Ç¶È
 	  {
-			if(_flight_output->yaw_ctrl_start==1)//æ›´æ–°åèˆªè§’åº¦æœŸæœ›
+			if(_flight_output->yaw_ctrl_start==1)//¸üĞÂÆ«º½½Ç¶ÈÆÚÍû
 			{
 				float yaw_tmp=_flight_output->yaw_outer_control_output;
 				if(yaw_tmp<0) 	yaw_tmp+=360;
@@ -334,22 +334,22 @@ void steer_control(float *output)
 				_flight_output->yaw_ctrl_end=0;
 			}
 			
-			if(_flight_output->yaw_ctrl_end==0)//åˆ¤æ–­åèˆªè§’æ˜¯å¦æ§åˆ¶å®Œæ¯•
+			if(_flight_output->yaw_ctrl_end==0)//ÅĞ¶ÏÆ«º½½ÇÊÇ·ñ¿ØÖÆÍê±Ï
 			{
 				if(ABS(steer_angle_error)<3.0f) _flight_output->yaw_ctrl_cnt++;
 				else _flight_output->yaw_ctrl_cnt/=2;
 				
 				if(_flight_output->yaw_ctrl_cnt>=200)  _flight_output->yaw_ctrl_end=1;
 			}			
-			//è§’åº¦æ§åˆ¶
+			//½Ç¶È¿ØÖÆ
 			steer_angle_ctrl();
-			//è§’é€Ÿåº¦æœŸæœ›
+			//½ÇËÙ¶ÈÆÚÍû
 			steer_gyro_expect=steer_angle_output;					
 		}
 		break;
-		case CLOCKWISE://é¡ºæ—¶é’ˆâ€”â€”â€”â€”ç›¸å¯¹ç»™å®šæ—¶åˆ»çš„èˆªå‘è§’åº¦
+		case CLOCKWISE://Ë³Ê±Õë¡ª¡ª¡ª¡ªÏà¶Ô¸ø¶¨Ê±¿ÌµÄº½Ïò½Ç¶È
 		{
-			if(_flight_output->yaw_ctrl_start==1)//æ›´æ–°åèˆªè§’åº¦æœŸæœ›
+			if(_flight_output->yaw_ctrl_start==1)//¸üĞÂÆ«º½½Ç¶ÈÆÚÍû
 			{
 				float yaw_tmp=smartcar_imu.rpy_deg[_YAW]-_flight_output->yaw_outer_control_output;
 				if(yaw_tmp<0) 	yaw_tmp+=360;
@@ -360,7 +360,7 @@ void steer_control(float *output)
 				_flight_output->yaw_ctrl_end=0;
 			}
 			
-			if(_flight_output->yaw_ctrl_end==0)//åˆ¤æ–­åèˆªè§’æ˜¯å¦æ§åˆ¶å®Œæ¯•
+			if(_flight_output->yaw_ctrl_end==0)//ÅĞ¶ÏÆ«º½½ÇÊÇ·ñ¿ØÖÆÍê±Ï
 			{
 				if(ABS(steer_angle_error)<3.0f) _flight_output->yaw_ctrl_cnt++;
 				else _flight_output->yaw_ctrl_cnt/=2;
@@ -368,15 +368,15 @@ void steer_control(float *output)
 				if(_flight_output->yaw_ctrl_cnt>=200)  _flight_output->yaw_ctrl_end=1;
 			}
 			
-			//è§’åº¦æ§åˆ¶
+			//½Ç¶È¿ØÖÆ
 			steer_angle_ctrl();
-			//è§’é€Ÿåº¦æœŸæœ›
+			//½ÇËÙ¶ÈÆÚÍû
 			steer_gyro_expect=steer_angle_output;		
 		}
 		break;		
-		case ANTI_CLOCKWISE://é€†æ—¶é’ˆâ€”â€”ç›¸å¯¹ç»™å®šæ—¶åˆ»çš„èˆªå‘è§’åº¦
+		case ANTI_CLOCKWISE://ÄæÊ±Õë¡ª¡ªÏà¶Ô¸ø¶¨Ê±¿ÌµÄº½Ïò½Ç¶È
 		{
-			if(_flight_output->yaw_ctrl_start==1)//æ›´æ–°åèˆªè§’åº¦æœŸæœ›
+			if(_flight_output->yaw_ctrl_start==1)//¸üĞÂÆ«º½½Ç¶ÈÆÚÍû
 			{
 				float yaw_tmp=smartcar_imu.rpy_deg[_YAW]+_flight_output->yaw_outer_control_output;
 				if(yaw_tmp<0) 	yaw_tmp+=360;
@@ -387,7 +387,7 @@ void steer_control(float *output)
 				_flight_output->yaw_ctrl_end=0;
 			}
 			
-			if(_flight_output->yaw_ctrl_end==0)//åˆ¤æ–­åèˆªè§’æ˜¯å¦æ§åˆ¶å®Œæ¯•
+			if(_flight_output->yaw_ctrl_end==0)//ÅĞ¶ÏÆ«º½½ÇÊÇ·ñ¿ØÖÆÍê±Ï
 			{
 				if(ABS(steer_angle_error)<3.0f) _flight_output->yaw_ctrl_cnt++;
 				else _flight_output->yaw_ctrl_cnt/=2;
@@ -395,27 +395,27 @@ void steer_control(float *output)
 				if(_flight_output->yaw_ctrl_cnt>=200)  _flight_output->yaw_ctrl_end=1;
 			}
 			
-			//è§’åº¦æ§åˆ¶
+			//½Ç¶È¿ØÖÆ
 			steer_angle_ctrl();
-			//è§’é€Ÿåº¦æœŸæœ›
+			//½ÇËÙ¶ÈÆÚÍû
 			steer_gyro_expect=steer_angle_output;		
 		}
 		break;
-		case CLOCKWISE_TURN://ä»¥æŸä¸€è§’é€Ÿåº¦é¡ºæ—¶é’ˆæ—‹è½¬å¤šé•¿æ—¶é—´
+		case CLOCKWISE_TURN://ÒÔÄ³Ò»½ÇËÙ¶ÈË³Ê±ÕëĞı×ª¶à³¤Ê±¼ä
 		{
 			uint32_t curr_time_ms=millis();
 			
-			if(_flight_output->yaw_ctrl_start==1)//æ›´æ–°åèˆªè§’åº¦æœŸæœ›
+			if(_flight_output->yaw_ctrl_start==1)//¸üĞÂÆ«º½½Ç¶ÈÆÚÍû
 			{
-				//å¯¹æœ€å¤§åèˆªè§’é€Ÿåº¦è¿›è¡Œé™åˆ¶
-				steer_gyro_expect=-_flight_output->yaw_outer_control_output;//åèˆªè§’é€Ÿåº¦ç¯æœŸæœ›ï¼Œæ¥æºäºåèˆªè§’åº¦æ§åˆ¶å™¨è¾“å‡º
+				//¶Ô×î´óÆ«º½½ÇËÙ¶È½øĞĞÏŞÖÆ
+				steer_gyro_expect=-_flight_output->yaw_outer_control_output;//Æ«º½½ÇËÙ¶È»·ÆÚÍû£¬À´Ô´ÓÚÆ«º½½Ç¶È¿ØÖÆÆ÷Êä³ö
 				_flight_output->yaw_ctrl_start=0;
 				_flight_output->yaw_ctrl_cnt=0;
 				_flight_output->yaw_ctrl_end=0;
-				_flight_output->start_time_ms=curr_time_ms;//è®°å½•å¼€å§‹è½¬åŠ¨çš„æ—¶é—´				
+				_flight_output->start_time_ms=curr_time_ms;//¼ÇÂ¼¿ªÊ¼×ª¶¯µÄÊ±¼ä				
 			}
 			
-			if(_flight_output->yaw_ctrl_end==0)//åˆ¤æ–­åèˆªè§’æ˜¯å¦æ§åˆ¶å®Œæ¯•
+			if(_flight_output->yaw_ctrl_end==0)//ÅĞ¶ÏÆ«º½½ÇÊÇ·ñ¿ØÖÆÍê±Ï
 			{
 				uint32_t tmp=curr_time_ms-_flight_output->start_time_ms;
 				if(tmp>=_flight_output->execution_time_ms)					
@@ -423,29 +423,29 @@ void steer_control(float *output)
 			}
 			else
 			{
-				//æ‰§è¡Œå®Œæ¯•å,
-				//1ã€å°†åèˆªè§’é€Ÿåº¦æœŸæœ›ç»™0,
-				//2ã€åœæ­¢æ—‹è½¬å¹¶é”å®šå½“å‰åèˆªè§’ï¼Œéœ€è¦é€€å‡ºCLOCKWISE_TURNæ¨¡å¼ï¼Œè§’åº¦æœŸæœ›æ‰ä¼šæœ‰æ•ˆï¼Œå› ä¸ºæ­¤æ¨¡å¼æ²¡æœ‰å¯¹åèˆªè§’åº¦è¿›è¡Œæ§åˆ¶
+				//Ö´ĞĞÍê±Ïºó,
+				//1¡¢½«Æ«º½½ÇËÙ¶ÈÆÚÍû¸ø0,
+				//2¡¢Í£Ö¹Ğı×ª²¢Ëø¶¨µ±Ç°Æ«º½½Ç£¬ĞèÒªÍË³öCLOCKWISE_TURNÄ£Ê½£¬½Ç¶ÈÆÚÍû²Å»áÓĞĞ§£¬ÒòÎª´ËÄ£Ê½Ã»ÓĞ¶ÔÆ«º½½Ç¶È½øĞĞ¿ØÖÆ
 				steer_gyro_expect=0;
 				steer_angle_expect=smartcar_imu.rpy_deg[_YAW];
 			}
 		}
 		break;
-		case ANTI_CLOCKWISE_TURN://ä»¥æŸä¸€è§’é€Ÿåº¦é€†æ—¶é’ˆæ—‹è½¬å¤šé•¿æ—¶é—´
+		case ANTI_CLOCKWISE_TURN://ÒÔÄ³Ò»½ÇËÙ¶ÈÄæÊ±ÕëĞı×ª¶à³¤Ê±¼ä
 		{
 			uint32_t curr_time_ms=millis();
 			
-			if(_flight_output->yaw_ctrl_start==1)//æ›´æ–°åèˆªè§’åº¦æœŸæœ›
+			if(_flight_output->yaw_ctrl_start==1)//¸üĞÂÆ«º½½Ç¶ÈÆÚÍû
 			{
-				//å¯¹æœ€å¤§åèˆªè§’é€Ÿåº¦è¿›è¡Œé™åˆ¶
-				steer_gyro_expect=_flight_output->yaw_outer_control_output;//åèˆªè§’é€Ÿåº¦ç¯æœŸæœ›ï¼Œæ¥æºäºåèˆªè§’åº¦æ§åˆ¶å™¨è¾“å‡º
+				//¶Ô×î´óÆ«º½½ÇËÙ¶È½øĞĞÏŞÖÆ
+				steer_gyro_expect=_flight_output->yaw_outer_control_output;//Æ«º½½ÇËÙ¶È»·ÆÚÍû£¬À´Ô´ÓÚÆ«º½½Ç¶È¿ØÖÆÆ÷Êä³ö
 				_flight_output->yaw_ctrl_start=0;
 				_flight_output->yaw_ctrl_cnt=0;
 				_flight_output->yaw_ctrl_end=0;
-				_flight_output->start_time_ms=curr_time_ms;//è®°å½•å¼€å§‹è½¬åŠ¨çš„æ—¶é—´				
+				_flight_output->start_time_ms=curr_time_ms;//¼ÇÂ¼¿ªÊ¼×ª¶¯µÄÊ±¼ä				
 			}
 			
-			if(_flight_output->yaw_ctrl_end==0)//åˆ¤æ–­åèˆªè§’æ˜¯å¦æ§åˆ¶å®Œæ¯•
+			if(_flight_output->yaw_ctrl_end==0)//ÅĞ¶ÏÆ«º½½ÇÊÇ·ñ¿ØÖÆÍê±Ï
 			{
 				uint32_t tmp=curr_time_ms-_flight_output->start_time_ms;
 				if(tmp>=_flight_output->execution_time_ms)					
@@ -453,9 +453,9 @@ void steer_control(float *output)
 			}
 			else
 			{
-				//æ‰§è¡Œå®Œæ¯•å,
-				//1ã€å°†åèˆªè§’é€Ÿåº¦æœŸæœ›ç»™0,
-				//2ã€åœæ­¢æ—‹è½¬å¹¶é”å®šå½“å‰åèˆªè§’ï¼Œéœ€è¦é€€å‡ºCLOCKWISE_TURNæ¨¡å¼ï¼Œè§’åº¦æœŸæœ›æ‰ä¼šæœ‰æ•ˆï¼Œå› ä¸ºæ­¤æ¨¡å¼æ²¡æœ‰å¯¹åèˆªè§’åº¦è¿›è¡Œæ§åˆ¶
+				//Ö´ĞĞÍê±Ïºó,
+				//1¡¢½«Æ«º½½ÇËÙ¶ÈÆÚÍû¸ø0,
+				//2¡¢Í£Ö¹Ğı×ª²¢Ëø¶¨µ±Ç°Æ«º½½Ç£¬ĞèÒªÍË³öCLOCKWISE_TURNÄ£Ê½£¬½Ç¶ÈÆÚÍû²Å»áÓĞĞ§£¬ÒòÎª´ËÄ£Ê½Ã»ÓĞ¶ÔÆ«º½½Ç¶È½øĞĞ¿ØÖÆ
 				steer_gyro_expect=0;
 				steer_angle_expect=smartcar_imu.rpy_deg[_YAW];
 			}
@@ -467,18 +467,18 @@ void steer_control(float *output)
 			steer_angle_expect=smartcar_imu.rpy_deg[_YAW];
 		}
 	}
-	//è§’é€Ÿåº¦æ§åˆ¶
+	//½ÇËÙ¶È¿ØÖÆ
 	steer_gyro_ctrl();
 	*output=-steer_gyro_output;
 }
 
 /***************************************************
-å‡½æ•°å: void get_distance_error(vector2f t)
-è¯´æ˜:	è·å–ç›®æ ‡ä½ç½®å’Œå½“å‰ä½ç½®çš„åå·®
-å…¥å£:	vector2f t-ç›®æ ‡ä½ç½®
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void get_distance_error(vector2f t)
+ËµÃ÷:	»ñÈ¡Ä¿±êÎ»ÖÃºÍµ±Ç°Î»ÖÃµÄÆ«²î
+Èë¿Ú:	vector2f t-Ä¿±êÎ»ÖÃ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 float get_distance_error(vector2f t)
 {
@@ -487,24 +487,24 @@ float get_distance_error(vector2f t)
 
 vector2f target={0,0};
 /***************************************************
-å‡½æ•°å: void position_control(void)
-è¯´æ˜:	äºŒç»´ç›®æ ‡ä½ç½®æ§åˆ¶
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	
-		y+(åˆå§‹è½¦å¤´å·¦ä¾§)
+º¯ÊıÃû: void position_control(void)
+ËµÃ÷:	¶şÎ¬Ä¿±êÎ»ÖÃ¿ØÖÆ
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	
+		y+(³õÊ¼³µÍ·×ó²à)
 		*
 		*
 		*
 		*
 		*
 		*
-		***********x+(åˆå§‹è½¦å¤´æ–¹å‘)
-ä½œè€…:	æ— ååˆ›æ–°
+		***********x+(³õÊ¼³µÍ··½Ïò)
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
-void position_control(float fixed_threshold_cm,uint16_t feed_times)//å·²ä»»æ„å§¿æ€åˆ°è¾¾ç›®æ ‡ç‚¹,æ— é€Ÿåº¦æœ«ç«¯è§’åº¦çº¦æŸ
+void position_control(float fixed_threshold_cm,uint16_t feed_times)//ÒÑÈÎÒâ×ËÌ¬µ½´ïÄ¿±êµã,ÎŞËÙ¶ÈÄ©¶Ë½Ç¶ÈÔ¼Êø
 {
-	if(ngs_nav_ctrl.update_flag==1)//åœ°é¢ç«™/ROSå‘é€ä¸²å£æ§åˆ¶æŒ‡ä»¤
+	if(ngs_nav_ctrl.update_flag==1)//µØÃæÕ¾/ROS·¢ËÍ´®¿Ú¿ØÖÆÖ¸Áî
 	{
 		target.x=ngs_nav_ctrl.x;
 		target.y=ngs_nav_ctrl.y;
@@ -514,36 +514,36 @@ void position_control(float fixed_threshold_cm,uint16_t feed_times)//å·²ä»»æ„å§
 		ngs_nav_ctrl.cnt=0;	
 	}
 	
-	//èˆªå‘æ§åˆ¶
-	float theta=atan2f((target.y-smartcar_imu.state_estimation.pos.y),(target.x-smartcar_imu.state_estimation.pos.x));//ç›®æ ‡èˆªå‘
-	//è§’åº¦æ§åˆ¶
+	//º½Ïò¿ØÖÆ
+	float theta=atan2f((target.y-smartcar_imu.state_estimation.pos.y),(target.x-smartcar_imu.state_estimation.pos.x));//Ä¿±êº½Ïò
+	//½Ç¶È¿ØÖÆ
 	azimuth_ctrl.expect=theta*RAD2DEG;
 	azimuth_ctrl.feedback=smartcar_imu.rpy_deg[_YAW];
 	azimuth_ctrl.error=azimuth_ctrl.expect-azimuth_ctrl.feedback;
-	/***********************åèˆªè§’åå·®è¶…è¿‡+-180å¤„ç†*****************************/
+	/***********************Æ«º½½ÇÆ«²î³¬¹ı+-180´¦Àí*****************************/
 	if(azimuth_ctrl.error<-180) azimuth_ctrl.error=azimuth_ctrl.error+360;
 	if(azimuth_ctrl.error> 180) azimuth_ctrl.error=azimuth_ctrl.error-360;				
 	azimuth_ctrl.error=constrain_float(azimuth_ctrl.error,-30,30);
 	azimuth_ctrl.output=azimuth_ctrl.kp*azimuth_ctrl.error;
 	
-	//é™åˆ¶æœ€å¤§æœŸæœ›è§’é€Ÿåº¦ï¼Œè½®å­ä¸åº•è¾¹æ‘©æ“¦åŠ›å°æ—¶æ”¹ä¸‹æ­¤å€¼ï¼Œèƒ½å‡å°é‡Œç¨‹è®¡çš„è·ç¦»è¯¯å·®
+	//ÏŞÖÆ×î´óÆÚÍû½ÇËÙ¶È£¬ÂÖ×ÓÓëµ×±ßÄ¦²ÁÁ¦Ğ¡Ê±¸ÄÏÂ´ËÖµ£¬ÄÜ¼õĞ¡Àï³Ì¼ÆµÄ¾àÀëÎó²î
 	steer_angle_output=constrain_float(azimuth_ctrl.output,-100,100);
 	
-	steergyro_ctrl.expect=steer_angle_output;//æœŸæœ›
-	steergyro_ctrl.feedback=smartcar_imu.yaw_gyro_enu;//åèˆªè§’åº¦åé¦ˆ
-	pid_control_run(&steergyro_ctrl);		  //æ§åˆ¶å™¨è¿ç®—
+	steergyro_ctrl.expect=steer_angle_output;//ÆÚÍû
+	steergyro_ctrl.feedback=smartcar_imu.yaw_gyro_enu;//Æ«º½½Ç¶È·´À¡
+	pid_control_run(&steergyro_ctrl);		  //¿ØÖÆÆ÷ÔËËã
 	steer_gyro_output=steergyro_ctrl.output;
 
-	//è·ç¦»æ§åˆ¶
+	//¾àÀë¿ØÖÆ
 	distance_ctrl.expect=0;
 	distance_ctrl.feedback=-get_distance_error(target);
 	distance_ctrl.error=distance_ctrl.expect-distance_ctrl.feedback;
   distance_ctrl.error=constrain_float(distance_ctrl.error,-50,50);
 	distance_ctrl.output=distance_ctrl.kp*distance_ctrl.error;
-	distance_ctrl.output=constrain_float(distance_ctrl.output,-20,20);//å¯¹é€Ÿåº¦æœŸæœ›è¿›è¡Œé™åˆ¶ï¼Œé¿å…è½®èƒæ‰“æ»‘é€ æˆé‡Œç¨‹è®¡è¯¯å·®
+	distance_ctrl.output=constrain_float(distance_ctrl.output,-20,20);//¶ÔËÙ¶ÈÆÚÍû½øĞĞÏŞÖÆ£¬±ÜÃâÂÖÌ¥´ò»¬Ôì³ÉÀï³Ì¼ÆÎó²î
 	
-	//èˆªç‚¹éå†ç»“æŸæ ‡å¿—åˆ¤æ–­
-	if(ngs_nav_ctrl.cnt<feed_times)//æŒç»­50msæ»¡è¶³
+	//º½µã±éÀú½áÊø±êÖ¾ÅĞ¶Ï
+	if(ngs_nav_ctrl.cnt<feed_times)//³ÖĞø50msÂú×ã
 	{
 		if(ABS(distance_ctrl.error)<=fixed_threshold_cm) ngs_nav_ctrl.cnt++;
 		else ngs_nav_ctrl.cnt/=2;
@@ -554,7 +554,7 @@ void position_control(float fixed_threshold_cm,uint16_t feed_times)//å·²ä»»æ„å§
 		ngs_nav_ctrl.cnt=0;
 	}
 	
-	if(ngs_nav_ctrl.ctrl_finish_flag==1)//åˆ°è¾¾ç›®æ ‡ä½ç½®åï¼Œé€Ÿåº¦æœŸæœ›ç»™0
+	if(ngs_nav_ctrl.ctrl_finish_flag==1)//µ½´ïÄ¿±êÎ»ÖÃºó£¬ËÙ¶ÈÆÚÍû¸ø0
 	{
 		steer_gyro_output=0;
 		distance_ctrl.output=0;
@@ -563,30 +563,30 @@ void position_control(float fixed_threshold_cm,uint16_t feed_times)//å·²ä»»æ„å§
 
 
 /***************************************************
-å‡½æ•°å: void distance_control(void)
-è¯´æ˜:	è·ç¦»æ§åˆ¶
-å…¥å£:	æ—  
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void distance_control(void)
+ËµÃ÷:	¾àÀë¿ØÖÆ
+Èë¿Ú:	ÎŞ 
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void distance_control(void)
 {
-	//è·ç¦»æ§åˆ¶
+	//¾àÀë¿ØÖÆ
 	distance_ctrl.feedback=smartcar_imu.state_estimation.distance;
 	distance_ctrl.error=distance_ctrl.expect-distance_ctrl.feedback;
   distance_ctrl.error=constrain_float(distance_ctrl.error,-50,50);
 	distance_ctrl.output=3.0f*distance_ctrl.error;//
-	distance_ctrl.output=constrain_float(distance_ctrl.output,-20,20);//å¯¹é€Ÿåº¦æœŸæœ›è¿›è¡Œé™åˆ¶ï¼Œé¿å…è½®èƒæ‰“æ»‘é€ æˆé‡Œç¨‹è®¡è¯¯å·®
+	distance_ctrl.output=constrain_float(distance_ctrl.output,-20,20);//¶ÔËÙ¶ÈÆÚÍû½øĞĞÏŞÖÆ£¬±ÜÃâÂÖÌ¥´ò»¬Ôì³ÉÀï³Ì¼ÆÎó²î
 }
 
 
 void distance_control_with_speed_limit(float speed_limit)
 {
-	//è·ç¦»æ§åˆ¶
+	//¾àÀë¿ØÖÆ
 	distance_ctrl.feedback=smartcar_imu.state_estimation.distance;
 	distance_ctrl.error=distance_ctrl.expect-distance_ctrl.feedback;
   distance_ctrl.error=constrain_float(distance_ctrl.error,-100,100);
 	distance_ctrl.output=5.0f*distance_ctrl.error;//
-	distance_ctrl.output=constrain_float(distance_ctrl.output,-speed_limit,speed_limit);//å¯¹é€Ÿåº¦æœŸæœ›è¿›è¡Œé™åˆ¶ï¼Œé¿å…è½®èƒæ‰“æ»‘é€ æˆé‡Œç¨‹è®¡è¯¯å·®
+	distance_ctrl.output=constrain_float(distance_ctrl.output,-speed_limit,speed_limit);//¶ÔËÙ¶ÈÆÚÍû½øĞĞÏŞÖÆ£¬±ÜÃâÂÖÌ¥´ò»¬Ôì³ÉÀï³Ì¼ÆÎó²î
 }

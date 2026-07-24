@@ -3,25 +3,25 @@
 #include "user.h"
 
 
-float steer_deadzone=50.0f;//50  è½¬å‘æ§åˆ¶æ­»åŒº
+float steer_deadzone=50.0f;//50  ×ªÏò¿ØÖÆËÀÇø
 
 _gray_state gray_state;
-float gray_status[2]={0},gray_status_backup[2][20]={0};//ç°åº¦ä¼ æ„Ÿå™¨çŠ¶æ€ä¸å†å²å€¼
-float turn_output=0,turn_output_last=0;//æ§åˆ¶å™¨è¾“å‡ºå€¼
-float	turn_scale=turn_scale_default;//è½¬å‘æ§åˆ¶å·®é€Ÿç³»æ•°  0.15
-uint32_t gray_status_worse=0;	//ç°åº¦ç®¡å¼‚å¸¸çŠ¶æ€è®¡æ•°å™¨
-controller seektrack_ctrl[2];		//è‡ªä¸»å¯»è¿¹æ§åˆ¶å™¨ç»“æ„ä½“
+float gray_status[2]={0},gray_status_backup[2][20]={0};//»Ò¶È´«¸ĞÆ÷×´Ì¬ÓëÀúÊ·Öµ
+float turn_output=0,turn_output_last=0;//¿ØÖÆÆ÷Êä³öÖµ
+float	turn_scale=turn_scale_default;//×ªÏò¿ØÖÆ²îËÙÏµÊı  0.15
+uint32_t gray_status_worse=0;	//»Ò¶È¹ÜÒì³£×´Ì¬¼ÆÊıÆ÷
+controller seektrack_ctrl[2];		//×ÔÖ÷Ñ°¼£¿ØÖÆÆ÷½á¹¹Ìå
 uint32_t vision_status_worse=0;
 
 
 
 /***************************************************
-å‡½æ•°å: void gpio_input_init(void)
-è¯´æ˜:	12è·¯ç°åº¦ç®¡gpioæ£€æµ‹åˆå§‹åŒ–
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void gpio_input_init(void)
+ËµÃ÷:	12Â·»Ò¶È¹Ügpio¼ì²â³õÊ¼»¯
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void gpio_input_init(void)
 {
@@ -43,12 +43,12 @@ void gpio_input_init(void)
 
 
 /***************************************************
-å‡½æ•°å: void gpio_input_check_channel_7(void)
-è¯´æ˜:	7è·¯ç°åº¦ç®¡gpioæ£€æµ‹
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void gpio_input_check_channel_7(void)
+ËµÃ÷:	7Â·»Ò¶È¹Ügpio¼ì²â
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void gpio_input_check_channel_7(void)
 {
@@ -97,12 +97,12 @@ void gpio_input_check_channel_7(void)
 
 
 /***************************************************
-å‡½æ•°å: void gpio_input_check_channel_12(void)
-è¯´æ˜:	12è·¯ç°åº¦ç®¡gpioæ£€æµ‹
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void gpio_input_check_channel_12(void)
+ËµÃ÷:	12Â·»Ò¶È¹Ügpio¼ì²â
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void gpio_input_check_channel_12(void)
 {
@@ -156,7 +156,7 @@ void gpio_input_check_channel_12(void)
 		case 0x0C00:gray_status[0]=10;	gray_status_worse/=2;break;									//110000000000b
 		case 0x0800:gray_status[0]=11;	gray_status_worse/=2;break;									//100000000000b
 		case 0x0000:gray_status[0]=gray_status_backup[0][0];gray_status_worse++;break; //00000000b
-		default://å…¶å®ƒç‰¹æ®Šæƒ…å†µå•ç‹¬åˆ¤æ–­
+		default://ÆäËüÌØÊâÇé¿öµ¥¶ÀÅĞ¶Ï
 		{
 			gray_status[0]=gray_status_backup[0][0];
 			gray_status_worse++;
@@ -164,7 +164,7 @@ void gpio_input_check_channel_12(void)
 	}
 
 	static uint16_t tmp_cnt=0;
-	switch(gray_state.state)//åœæ­¢çº¿æ£€æµ‹
+	switch(gray_state.state)//Í£Ö¹Ïß¼ì²â
 	{
 		case 0x0030:tmp_cnt++;break;//000000110000b
 		case 0x0020:tmp_cnt++;break;//000000100000b
@@ -193,12 +193,12 @@ uint8_t startpoint_check_flag=0;
 uint8_t track_switch_flag=0;
 float startpoint_straightaway_cm=0;
 /***************************************************
-å‡½æ•°å: void gpio_input_check_channel_12_with_handle(void)
-è¯´æ˜:	12è·¯ç°åº¦ç®¡gpioæ£€æµ‹,å¸¦èµ›é“ä¿¡æ¯æ£€æµ‹
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void gpio_input_check_channel_12_with_handle(void)
+ËµÃ÷:	12Â·»Ò¶È¹Ügpio¼ì²â,´øÈüµÀĞÅÏ¢¼ì²â
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void gpio_input_check_channel_12_with_handle(void)
 {
@@ -254,12 +254,12 @@ void gpio_input_check_channel_12_with_handle(void)
 		case 0x0C00:gray_status[0]=10;	gray_status_worse/=2;break;									//110000000000b
 		case 0x0800:gray_status[0]=11;	gray_status_worse/=2;break;									//100000000000b
 		case 0x0000:gray_status[0]=gray_status_backup[0][0];gray_status_worse++;break;//000000000000b
-		default://å…¶å®ƒç‰¹æ®Šæƒ…å†µå•ç‹¬åˆ¤æ–­
+		default://ÆäËüÌØÊâÇé¿öµ¥¶ÀÅĞ¶Ï
 		{
 			uint16_t tmp_state=gray_state.state;
-			if(startpoint_check_flag==1&&track_switch_flag==1)//åˆ‡æ¢å†…åœˆ
+			if(startpoint_check_flag==1&&track_switch_flag==1)//ÇĞ»»ÄÚÈ¦
 			{
-				//åªå“åº”å·¦ä¾§ç°åº¦ç®¡çš„çŠ¶æ€
+				//Ö»ÏìÓ¦×ó²à»Ò¶È¹ÜµÄ×´Ì¬
 				//tmp_state&=0x0FC0;//&&111111000000
 				tmp_state&=0x0F80;//&&111110000000
 				switch(tmp_state)
@@ -278,9 +278,9 @@ void gpio_input_check_channel_12_with_handle(void)
 					default:gray_status[0]=0;
 				}
 			}
-			else if(startpoint_check_flag==1&&track_switch_flag==0)//åˆ‡æ¢å¤–åœˆ
+			else if(startpoint_check_flag==1&&track_switch_flag==0)//ÇĞ»»ÍâÈ¦
 			{
-				//åªå“åº”ä¸­é—´+å³ä¾§ä¾§ç°åº¦ç®¡çš„çŠ¶æ€
+				//Ö»ÏìÓ¦ÖĞ¼ä+ÓÒ²à²à»Ò¶È¹ÜµÄ×´Ì¬
 				tmp_state&=0x00FF;//&&000011111111
 				switch(tmp_state)
 				{
@@ -310,7 +310,7 @@ void gpio_input_check_channel_12_with_handle(void)
 		}
 	}
 	float pos_delta=smartcar_imu.state_estimation.speed*0.001f;
-	switch(gray_state.state)//å‡ºå‘ç‚¹æ£€æµ‹ç‰¹æ®Šå¤„ç†
+	switch(gray_state.state)//³ö·¢µã¼ì²âÌØÊâ´¦Àí
 	{
 		case 0x0001:startpoint_straightaway_cm=0;break;									//000000000001b
 		case 0x0003:startpoint_straightaway_cm=0;break;									//000000000011b
@@ -323,7 +323,7 @@ void gpio_input_check_channel_12_with_handle(void)
 		case 0x0010:startpoint_straightaway_cm=0;break;									//000000010000b
 		case 0x0030:startpoint_straightaway_cm+=pos_delta;break;				//000000110000b
 		case 0x0020:startpoint_straightaway_cm+=pos_delta;break;				//000000100000b
-		case 0x0060:startpoint_straightaway_cm+=pos_delta;break;				//000001100000b   æ­£ä¸­é—´
+		case 0x0060:startpoint_straightaway_cm+=pos_delta;break;				//000001100000b   ÕıÖĞ¼ä
 		case 0x0040:startpoint_straightaway_cm+=pos_delta;break;				//000001000000b
 		case 0x00C0:startpoint_straightaway_cm+=pos_delta;break;				//000011000000b
 		case 0x0080:startpoint_straightaway_cm=0;break;									//000010000000b
@@ -335,25 +335,25 @@ void gpio_input_check_channel_12_with_handle(void)
 		case 0x0400:startpoint_straightaway_cm=0;break;									//010000000000b
 		case 0x0C00:startpoint_straightaway_cm=0;break;									//110000000000b
 		case 0x0800:startpoint_straightaway_cm=0;break;									//100000000000b
-		//ä¸Šè¿°æƒ…å½¢è¡¨æ˜æ˜¯æ­£å¸¸èµ›é“ï¼Œä¹Ÿå¯ä»¥ä»…ä»…å¯¹é è¿‘æ­£ä¸­é—´çš„æƒ…å½¢è‡ªåŠ ï¼Œç›¸å½“äºç›´é“è·¯çº¦æŸ
-		//case 0x00F0://000011110000b//è¿ç»­å››ä½
-		//case 0x01E0://000111100000b//è¿ç»­å››ä½
-		//case 0x0078://000001111000b//è¿ç»­å››ä½
-		case 0x01F0://000111110000b//è¿ç»­äº”ä½
-		case 0x00F8://000011111000b//è¿ç»­äº”ä½
-		case 0x01F8://000111111000b//è¿ç»­å…­ä½
+		//ÉÏÊöÇéĞÎ±íÃ÷ÊÇÕı³£ÈüµÀ£¬Ò²¿ÉÒÔ½ö½ö¶Ô¿¿½üÕıÖĞ¼äµÄÇéĞÎ×Ô¼Ó£¬Ïàµ±ÓÚÖ±µÀÂ·Ô¼Êø
+		//case 0x00F0://000011110000b//Á¬ĞøËÄÎ»
+		//case 0x01E0://000111100000b//Á¬ĞøËÄÎ»
+		//case 0x0078://000001111000b//Á¬ĞøËÄÎ»
+		case 0x01F0://000111110000b//Á¬ĞøÎåÎ»
+		case 0x00F8://000011111000b//Á¬ĞøÎåÎ»
+		case 0x01F8://000111111000b//Á¬ĞøÁùÎ»
 		{
-			if(startpoint_check_flag==1)//å·²æ£€æµ‹åˆ°åœæ­¢ç‚¹ï¼Œæ ‡å¿—ä½æœªæ¸…é™¤æ—¶æå‰é€€å‡º
+			if(startpoint_check_flag==1)//ÒÑ¼ì²âµ½Í£Ö¹µã£¬±êÖ¾Î»Î´Çå³ıÊ±ÌáÇ°ÍË³ö
 			{
 					break;
 			}
 
-			//30cmç›´é“çº¦æŸ
-			if(startpoint_straightaway_cm>=30)//å½“å­˜åœ¨è¯¯åˆ¤æ—¶,å¯å°è¯•åŠ å¤§æ­¤å€¼
+			//30cmÖ±µÀÔ¼Êø
+			if(startpoint_straightaway_cm>=30)//µ±´æÔÚÎóÅĞÊ±,¿É³¢ÊÔ¼Ó´ó´ËÖµ
 			{
 				startpoint_straightaway_cm=0;
 				startpoint_check_flag=1;
-				startpoint_distance_cm=smartcar_imu.state_estimation.distance;//è®°å½•è¯†åˆ«åˆ°çš„å‡ºå‘ç‚¹æ‰€åœ¨çš„è·ç¦»
+				startpoint_distance_cm=smartcar_imu.state_estimation.distance;//¼ÇÂ¼Ê¶±ğµ½µÄ³ö·¢µãËùÔÚµÄ¾àÀë
 
 				if(track_switch_flag==0)
 				{
@@ -379,9 +379,9 @@ void gpio_input_check_channel_12_with_handle(void)
 		}
 	}
 
-	if(startpoint_check_flag==1)//æ£€æµ‹åˆ°åœæ­¢ç‚¹
+	if(startpoint_check_flag==1)//¼ì²âµ½Í£Ö¹µã
 	{
-		if(smartcar_imu.state_estimation.distance-startpoint_distance_cm>=startpoint_check_state_keep_cm)//æ£€æµ‹æ ‡å¿—ä½ä¿æŒè·ç¦»ä¸º50cm
+		if(smartcar_imu.state_estimation.distance-startpoint_distance_cm>=startpoint_check_state_keep_cm)//¼ì²â±êÖ¾Î»±£³Ö¾àÀëÎª50cm
 		{
 			startpoint_check_flag=0;
 			beep.period=50;//200*5ms
@@ -395,53 +395,53 @@ void gpio_input_check_channel_12_with_handle(void)
 
 
 /***************************************************
-å‡½æ•°å: void gray_turn_control_200hz(float *output)
-è¯´æ˜:	ç°åº¦ç®¡å¯»è¿¹æ—¶çš„è½¬å‘æ§åˆ¶
-å…¥å£:	float *output-æ§åˆ¶å™¨è¾“å‡º
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void gray_turn_control_200hz(float *output)
+ËµÃ÷:	»Ò¶È¹ÜÑ°¼£Ê±µÄ×ªÏò¿ØÖÆ
+Èë¿Ú:	float *output-¿ØÖÆÆ÷Êä³ö
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void gray_turn_control_200hz(float *output)
 {
-		//æ•°æ®å¼‚å¸¸å¤„ç†
-	if(gray_status_worse>=1000)//æŒç»­1Så†…æ£€æµ‹ä¸åˆ°æ­£å¸¸é»‘çº¿ï¼Œå¯ä»¥è®¤å®šä¸ºè·‘å‡ºèµ›é“ä¸¢çº¿å¤„ç†
+		//Êı¾İÒì³£´¦Àí
+	if(gray_status_worse>=1000)//³ÖĞø1SÄÚ¼ì²â²»µ½Õı³£ºÚÏß£¬¿ÉÒÔÈÏ¶¨ÎªÅÜ³öÈüµÀ¶ªÏß´¦Àí
 	{
-		trackless_output.unlock_flag=LOCK;//ä¸Šé”
+		trackless_output.unlock_flag=LOCK;//ÉÏËø
 	}
 
-	//ä¿å­˜ä¸Šæ¬¡æ§åˆ¶å™¨è¾“å‡º
+	//±£´æÉÏ´Î¿ØÖÆÆ÷Êä³ö
 	turn_output_last=turn_output;
-	//è½¬å‘PDæ§åˆ¶è¾“å‡ºï¼Œèˆµå‘æ§åˆ¶å®æ—¶æ€§è¦æ±‚é«˜ï¼Œå¼•å…¥ç§¯åˆ†Iä¼šä½¿èˆµå‘å“åº”æ»å
-	seektrack_ctrl[0].expect=0;							//æœŸæœ›
-	seektrack_ctrl[0].feedback=gray_status[0];	//åé¦ˆ
-	pid_control_run(&seektrack_ctrl[0]);		  //æ§åˆ¶å™¨è¿ç®—
+	//×ªÏòPD¿ØÖÆÊä³ö£¬¶æÏò¿ØÖÆÊµÊ±ĞÔÒªÇó¸ß£¬ÒıÈë»ı·ÖI»áÊ¹¶æÏòÏìÓ¦ÖÍºó
+	seektrack_ctrl[0].expect=0;							//ÆÚÍû
+	seektrack_ctrl[0].feedback=gray_status[0];	//·´À¡
+	pid_control_run(&seektrack_ctrl[0]);		  //¿ØÖÆÆ÷ÔËËã
 	turn_output=seektrack_ctrl[0].output;
-	//å åŠ æ­»åŒºæ§åˆ¶
+	//µş¼ÓËÀÇø¿ØÖÆ
 	if(turn_output>0) turn_output+=steer_deadzone;
 	if(turn_output<0) turn_output-=steer_deadzone;
-	//è¾“å‡ºé™å¹…
-	turn_output=constrain_float(turn_output,-500,500);//è½¬å‘æ§åˆ¶è¾“å‡ºé™å¹…
+	//Êä³öÏŞ·ù
+	turn_output=constrain_float(turn_output,-500,500);//×ªÏò¿ØÖÆÊä³öÏŞ·ù
 
-	*output=0.75f*turn_output+0.25f*turn_output_last;//è¾“å‡ºä¸ºå‰åä¸¤æ¬¡è®¡ç®—çš„å‡å€¼
+	*output=0.75f*turn_output+0.25f*turn_output_last;//Êä³öÎªÇ°ºóÁ½´Î¼ÆËãµÄ¾ùÖµ
 }
 
 
 
 /***************************************************
-å‡½æ•°å: void gpio_input_check_from_vision(void)
-è¯´æ˜:	openmvè§†è§‰å¯»è¿¹æ—¶çš„åå·®æ£€æµ‹
-å…¥å£:	æ— 
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void gpio_input_check_from_vision(void)
+ËµÃ÷:	openmvÊÓ¾õÑ°¼£Ê±µÄÆ«²î¼ì²â
+Èë¿Ú:	ÎŞ
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void gpio_input_check_from_vision(void)
 {
 	static uint16_t cnt=0;
-	cnt++;if(cnt<=20) return;cnt=0;//å‘¨æœŸæ§åˆ¶4*5ms=20ms
+	cnt++;if(cnt<=20) return;cnt=0;//ÖÜÆÚ¿ØÖÆ4*5ms=20ms
 
-	//è§†è§‰è¾“å…¥åå·®ä»¥50hzçš„é¢‘ç‡è¾“å…¥ä¸å­˜å‚¨
+	//ÊÓ¾õÊäÈëÆ«²îÒÔ50hzµÄÆµÂÊÊäÈëÓë´æ´¢
 	for(uint16_t i=19;i>0;i--)
 	{
 		gray_status_backup[1][i]=gray_status_backup[1][i-1];
@@ -452,30 +452,30 @@ void gpio_input_check_from_vision(void)
 }
 
 /***************************************************
-å‡½æ•°å: void vision_turn_control_50hz(float *output)
-è¯´æ˜:	openmvè§†è§‰å¯»è¿¹æ—¶çš„è½¬å‘æ§åˆ¶
-å…¥å£:	float *output-æ§åˆ¶å™¨è¾“å‡º
-å‡ºå£:	æ— 
-å¤‡æ³¨:	æ— 
-ä½œè€…:	æ— ååˆ›æ–°
+º¯ÊıÃû: void vision_turn_control_50hz(float *output)
+ËµÃ÷:	openmvÊÓ¾õÑ°¼£Ê±µÄ×ªÏò¿ØÖÆ
+Èë¿Ú:	float *output-¿ØÖÆÆ÷Êä³ö
+³ö¿Ú:	ÎŞ
+±¸×¢:	ÎŞ
+×÷Õß:	ÎŞÃû´´ĞÂ
 ****************************************************/
 void vision_turn_control_50hz(float *output)
 {
 	static uint16_t cnt=0;
-	cnt++;if(cnt<=4) return;cnt=0;//å‘¨æœŸæ§åˆ¶4*5ms=20ms
+	cnt++;if(cnt<=4) return;cnt=0;//ÖÜÆÚ¿ØÖÆ4*5ms=20ms
 
-	//ä¿å­˜ä¸Šæ¬¡æ§åˆ¶å™¨è¾“å‡º
+	//±£´æÉÏ´Î¿ØÖÆÆ÷Êä³ö
 	turn_output_last=turn_output;
-	//è½¬å‘PDæ§åˆ¶è¾“å‡ºï¼Œèˆµå‘æ§åˆ¶å®æ—¶æ€§è¦æ±‚é«˜ï¼Œå¼•å…¥ç§¯åˆ†Iä¼šä½¿èˆµå‘å“åº”æ»å
-	seektrack_ctrl[1].expect=0;							//æœŸæœ›
-	seektrack_ctrl[1].feedback=gray_status[1];	//åé¦ˆ
-	pid_control_run(&seektrack_ctrl[1]);		  //æ§åˆ¶å™¨è¿ç®—
+	//×ªÏòPD¿ØÖÆÊä³ö£¬¶æÏò¿ØÖÆÊµÊ±ĞÔÒªÇó¸ß£¬ÒıÈë»ı·ÖI»áÊ¹¶æÏòÏìÓ¦ÖÍºó
+	seektrack_ctrl[1].expect=0;							//ÆÚÍû
+	seektrack_ctrl[1].feedback=gray_status[1];	//·´À¡
+	pid_control_run(&seektrack_ctrl[1]);		  //¿ØÖÆÆ÷ÔËËã
 	turn_output=seektrack_ctrl[1].output;
-	//å åŠ æ­»åŒºæ§åˆ¶
+	//µş¼ÓËÀÇø¿ØÖÆ
 	if(turn_output>0) turn_output+=0;
 	if(turn_output<0) turn_output-=0;
-	//è¾“å‡ºé™å¹…
-	turn_output=constrain_float(turn_output,-500,500);//è½¬å‘æ§åˆ¶è¾“å‡ºé™å¹…
+	//Êä³öÏŞ·ù
+	turn_output=constrain_float(turn_output,-500,500);//×ªÏò¿ØÖÆÊä³öÏŞ·ù
 
 	*output=turn_output;
 }
@@ -485,7 +485,7 @@ void vision_turn_control_50hz(float *output)
 /**********************************************************/
 uint16_t road_miss_cnt=0;
 uint8_t road_miss_flag=0;
-uint8_t road_restore_flag=0;//èµ›é“æ¢å¤æ ‡å¿—ä½
+uint8_t road_restore_flag=0;//ÈüµÀ»Ö¸´±êÖ¾Î»
 void gpio_input_check_channel_12_2024(void)
 {
 	gray_state.gray_bit[0]=read_gray_bit1;
@@ -547,18 +547,18 @@ void gpio_input_check_channel_12_2024(void)
 		case 0x0E00:{gray_status[0]= 9; road_miss_cnt/=2;if(road_miss_flag==1)	road_restore_flag=1;} break;									//111000000000b
 		case 0x0C00:{gray_status[0]= 10;road_miss_cnt/=2;if(road_miss_flag==1)	road_restore_flag=1;} break;									//110000000000b
 		case 0x0800:{gray_status[0]= 11;road_miss_cnt/=2;if(road_miss_flag==1)	road_restore_flag=1;} break;									//100000000000b
-		case 0x0000://12è·¯ç°åº¦ä¼ æ„Ÿå™¨å®Œå…¨ä¸¢çº¿
+		case 0x0000://12Â·»Ò¶È´«¸ĞÆ÷ÍêÈ«¶ªÏß
 		{
 			gray_status[0]=0;
 			road_miss_cnt++;
-			if(road_miss_cnt>10)//20ï¼šä¸¢çº¿æ£€æµ‹->æä¾›å¾ªè¿¹ç»“æŸæ ‡å¿—ä½
+			if(road_miss_cnt>10)//20£º¶ªÏß¼ì²â->Ìá¹©Ñ­¼£½áÊø±êÖ¾Î»
 			{
-				road_miss_flag=1;			//èµ›é“ä¸¢å¤±æ ‡å¿—ä½
-				road_restore_flag=0;  //èµ›é“æ¢å¤æ ‡å¿—ä½
+				road_miss_flag=1;			//ÈüµÀ¶ªÊ§±êÖ¾Î»
+				road_restore_flag=0;  //ÈüµÀ»Ö¸´±êÖ¾Î»
 			}
 		}
 		break;
-		default://å…¶å®ƒç‰¹æ®Šæƒ…å†µå•ç‹¬åˆ¤æ–­
+		default://ÆäËüÌØÊâÇé¿öµ¥¶ÀÅĞ¶Ï
 		{
 
 		}

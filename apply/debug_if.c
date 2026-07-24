@@ -298,7 +298,7 @@ void DebugIF_ProcessCmd(void)
     /* ---- Work mode switch ---- */
     else if (strcmp(key, "mode") == 0) {
         sdk_work_mode = (int16_t)val;
-        trackless_output.init = 0;  // è§¦å‘åˆå§‹åŒ–å¤ä½
+        trackless_output.init = 0;  // ´¥·¢³õÊ¼»¯¸´Î»
         snprintf(g_tx_buf, sizeof(g_tx_buf), "OK mode=%d\r\n", sdk_work_mode);
     }
     /* ---- Yaw target: enter AZIMUTH mode ---- */
