@@ -193,6 +193,10 @@
         </file>
       <file path="../apply/wp_math.h" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>
+      <file path="../apply/debug_if.c" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
+      <file path="../apply/debug_if.h" openOnCreation="false" excludeFromBuild="false" action="copy">
+        </file>
 
       <file path="../apply/developer/developer_mode.c" openOnCreation="false" excludeFromBuild="false" action="copy">
         </file>

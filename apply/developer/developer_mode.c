@@ -281,13 +281,87 @@ void sdk_duty_run(void)
 			speed_control_100hz(speed_ctrl_mode);	
 		}
 		break;
+		case 22://角速度内环调试（目标rate=输入）
+		{
+			static int16_t prev_mode = -1;
+
+			if (prev_mode != 22)
+			{
+				pid_integrate_reset(&steergyro_ctrl);
+				prev_mode = 22;
+			}
+
+			speed_ctrl_mode = 1;
+
+			// 外环输出直接作为内环期望角速度（绝对物理量）
+			steer_gyro_expect = trackless_output.yaw_outer_control_output;
+			steer_gyro_ctrl();
+
+			turn_ctrl_pwm = -steergyro_ctrl.output;
+
+			speed_setup = 0;
+			speed_expect[0] =  turn_ctrl_pwm * steer_gyro_scale;
+			speed_expect[1] = -turn_ctrl_pwm * steer_gyro_scale;
+			speed_control_100hz(speed_ctrl_mode);
+		}
+		break;
+		case 23://角度-角速度串级调试（目标yaw=输入）
+		{
+			static int16_t prev_mode = -1;
+
+			if (prev_mode != 23)
+			{
+				pid_integrate_reset(&steergyro_ctrl);
+				pid_integrate_reset(&steerangle_ctrl);
+				prev_mode = 23;
+			}
+
+			speed_ctrl_mode = 1;
+
+			// 外环：角度P控制
+			steer_angle_expect = trackless_output.yaw_outer_control_output;
+			steer_angle_ctrl();
+
+			// 外环输出限幅后作为内环期望角速度
+			float angle_output = steer_angle_output;
+			if (angle_output > 100.0f)  angle_output = 100.0f;
+			if (angle_output < -100.0f) angle_output = -100.0f;
+
+			// 内环：角速度PID
+			steer_gyro_expect = angle_output;
+			steer_gyro_ctrl();
+
+			turn_ctrl_pwm = -steergyro_ctrl.output;
+
+			speed_setup = 0;
+			speed_expect[0] =  turn_ctrl_pwm * steer_gyro_scale;
+			speed_expect[1] = -turn_ctrl_pwm * steer_gyro_scale;
+			speed_control_100hz(speed_ctrl_mode);
+		}
+		break;
+		case 50://陀螺仪角速度内环调试模式(理想rate=输入)
+		{
+			speed_ctrl_mode=1;//速度控制方式为期望值速度控制
+			// 直接设置角速度期望并调用内环，跳过 steer_control 的 ROTATE 混合逻辑
+			// ROTATE 在 yaw_outer_control_output==0 时会切入角度锁定，违背纯内环调试初衷
+			steer_gyro_expect=trackless_output.yaw_outer_control_output;
+			steer_gyro_ctrl();
+			turn_ctrl_pwm=-steer_gyro_output;//保持与 steer_control 相同的输出极性
+			speed_setup=0;//原地旋转无速度分量
+			//差速赋值
+			speed_expect[0]=turn_ctrl_pwm*steer_gyro_scale;//左轮期望速度
+			speed_expect[1]=-turn_ctrl_pwm*steer_gyro_scale;//右轮期望速度
+			//速度控制
+			speed_control_100hz(speed_ctrl_mode);
+		}
+		break;
 		default:
 		{
 			speed_ctrl_mode=1;//速度控制方式为两轮单独控制
 			trackless_output.yaw_ctrl_mode=ROTATE;//偏航控制模式
-			trackless_output.yaw_outer_control_output  =RC_Data.rc_rpyt[RC_ROLL];//偏航期望来源于横滚杆给定		
+			//trackless_output.yaw_outer_control_output  =RC_Data.rc_rpyt[RC_ROLL];//偏航期望来源于横滚杆给定		
 			steer_control(&turn_ctrl_pwm);
-			speed_setup=RC_Data.rc_rpyt[RC_PITCH];//速度期望来源于俯仰杆给定	
+			//speed_setup=RC_Data.rc_rpyt[RC_PITCH];//速度期望来源于俯仰杆给定	
 			//期望速度
 			speed_expect[0]=speed_setup+turn_ctrl_pwm*steer_gyro_scale;//左边轮子速度期望
 			speed_expect[1]=speed_setup-turn_ctrl_pwm*steer_gyro_scale;//右边轮子速度期望

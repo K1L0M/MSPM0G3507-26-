@@ -202,9 +202,9 @@ extern "C" {
 #define GPIO_UART_0_IOMUX_TX                                     (IOMUX_PINCM21)
 #define GPIO_UART_0_IOMUX_RX_FUNC                      IOMUX_PINCM22_PF_UART0_RX
 #define GPIO_UART_0_IOMUX_TX_FUNC                      IOMUX_PINCM21_PF_UART0_TX
-#define UART_0_BAUD_RATE                                                (460800)
-#define UART_0_IBRD_40_MHZ_460800_BAUD                                       (5)
-#define UART_0_FBRD_40_MHZ_460800_BAUD                                      (27)
+#define UART_0_BAUD_RATE                                                  (9600)
+#define UART_0_IBRD_40_MHZ_9600_BAUD                                       (260)
+#define UART_0_FBRD_40_MHZ_9600_BAUD                                        (27)
 /* Defines for UART_1 */
 #define UART_1_INST                                                        UART1
 #define UART_1_INST_FREQUENCY                                           40000000
@@ -270,6 +270,9 @@ extern "C" {
 
 
 
+/* Defines for DMA_CH1 */
+#define DMA_CH1_CHAN_ID                                                      (1)
+#define UART_0_INST_DMA_TRIGGER                              (DMA_UART0_TX_TRIG)
 /* Defines for DMA_CH0 */
 #define DMA_CH0_CHAN_ID                                                      (0)
 #define UART_2_INST_DMA_TRIGGER                              (DMA_UART2_TX_TRIG)

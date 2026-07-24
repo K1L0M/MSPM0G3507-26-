@@ -2,8 +2,13 @@
 #define __GRAY_DETECTION_H
 
 
+typedef struct
+{
+    uint16_t state;
+    bool gray_bit[16];
+}_gray_state;
 
-
+extern _gray_state gray_state;
 
 void gpio_input_init(void);
 void gpio_input_check_channel_7(void);
@@ -18,6 +23,7 @@ void gpio_input_check_channel_12_2024(void);
 
 extern float gray_status[2],gray_status_backup[2][20];
 
+extern float steer_deadzone;
 extern float turn_scale,turn_output;
 extern uint32_t gray_status_worse,vision_status_worse;
 
@@ -29,6 +35,7 @@ extern float startpoint_straightaway_cm;
 extern uint8_t road_miss_flag;
 extern uint16_t road_miss_cnt;
 extern uint8_t road_restore_flag;
+extern uint8_t startpoint_check_flag;
 #endif
 
 
@@ -45,18 +52,3 @@ extern uint8_t road_restore_flag;
 //#define read_gray_bit10  (DL_GPIO_readPins(PORTB_PORT,PORTB_GRAY_BIT9_PIN) != 0 ? 0x01 : 0x00)
 //#define read_gray_bit11  (DL_GPIO_readPins(PORTA_PORT,PORTA_GRAY_BIT10_PIN)!= 0 ? 0x01 : 0x00)
 //#define read_gray_bit12  (DL_GPIO_readPins(PORTB_PORT,PORTB_GRAY_BIT11_PIN)!= 0 ? 0x01 : 0x00)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

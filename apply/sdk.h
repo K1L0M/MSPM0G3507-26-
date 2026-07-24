@@ -4,12 +4,12 @@
 
 typedef enum
 {
-	ROTATE=0,							//ÊÖ¶¯Æ«º½¿ØÖÆÄ£Ê½
-  AZIMUTH=1,						//¾ø¶ÔÆ«º½½Ç¶È¿ØÖÆÄ£Ê½
-	CLOCKWISE=2,					//Ïà¶ÔÆ«º½½Ç¶ÈË³Ê±Õë¿ØÖÆÄ£Ê½	
-	ANTI_CLOCKWISE=3,			//Ïà¶ÔÆ«º½½Ç¶ÈÄæÊ±Õë¿ØÖÆÄ£Ê½	
-	CLOCKWISE_TURN=4,			//½ÇËÙ¶È¿ØÖÆË³Ê±ÕëÄ£Ê½
-	ANTI_CLOCKWISE_TURN=5,//½ÇËÙ¶È¿ØÖÆÄæÊ±ÕëÄ£Ê½
+	ROTATE=0,							//ï¿½Ö¶ï¿½Æ«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½
+  AZIMUTH=1,						//ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½ï¿½Ç¶È¿ï¿½ï¿½ï¿½Ä£Ê½
+	CLOCKWISE=2,					//ï¿½ï¿½ï¿½Æ«ï¿½ï¿½ï¿½Ç¶ï¿½Ë³Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½	
+	ANTI_CLOCKWISE=3,			//ï¿½ï¿½ï¿½Æ«ï¿½ï¿½ï¿½Ç¶ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½	
+	CLOCKWISE_TURN=4,			//ï¿½ï¿½ï¿½Ù¶È¿ï¿½ï¿½ï¿½Ë³Ê±ï¿½ï¿½Ä£Ê½
+	ANTI_CLOCKWISE_TURN=5,//ï¿½ï¿½ï¿½Ù¶È¿ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ä£Ê½
 }YAW_CTRL_MODE;
 
 typedef enum
@@ -28,23 +28,23 @@ typedef enum
 
 typedef struct
 {
-	float throttle_control_output;	  	//ÓÍÃÅ¿ØÖÆÆ÷×îÖÕÊä³ö£¬±äÁ¿ÔÝÎ´Ê¹ÓÃ
-	float roll_control_output;			  	//ºá¹ö×ËÌ¬¿ØÖÆÆ÷×îÖÕÊä³ö£¬±äÁ¿ÔÝÎ´Ê¹ÓÃ
-	float pitch_control_output;			  	//¸©Ñö×ËÌ¬¿ØÖÆÆ÷×îÖÕÊä³ö£¬±äÁ¿ÔÝÎ´Ê¹ÓÃ
-	float yaw_control_output;				  	//Æ«º½×ËÌ¬¿ØÖÆÆ÷×îÖÕÊä³ö£¬±äÁ¿ÔÝÎ´Ê¹ÓÃ
-	float roll_outer_control_output;  	//ºá¹ö×ËÌ¬¿ØÖÆÆ÷ÊäÈë
-	float pitch_outer_control_output; 	//¸©Ñö×ËÌ¬¿ØÖÆÆ÷ÊäÈë
-  float yaw_outer_control_output;	  	//Æ«º½×ËÌ¬¿ØÖÆÆ÷ÊäÈë
-  uint16_t motor_output[MOTOR_NUM];		//µç»úÓ³ÉäÊä³öÖµ£¬±äÁ¿ÔÝÎ´Ê¹ÓÃ
-  uint16_t temperature_control_output;//ÎÂ¶È¿ØÖÆÆ÷Êä³öÖµ£¬±äÁ¿ÔÝÎ´Ê¹ÓÃ
-	uint16_t yaw_ctrl_cnt;							//Æ«º½¿ØÖÆ¼ÆÊýÆ÷
-	YAW_CTRL_MODE yaw_ctrl_mode;				//Æ«º½¿ØÖÆÄ£Ê½
-	uint8_t yaw_ctrl_start;							//Æ«º½¿ØÖÆ¿ªÊ¼±êÖ¾Î»
-	uint8_t yaw_ctrl_end;								//Æ«º½¿ØÖÆ½áÊø±êÖ¾Î»
-	uint32_t start_time_ms;							//Æ«º½¿ØÖÆ¿ªÊ¼Ê±¼ä
-	uint32_t execution_time_ms;					//Æ«º½¿ØÖÆÖ´ÐÐÊ±¼ä
-	uint8_t init;												//Æ«º½¿ØÖÆ³õÊ¼»¯±êÖ¾Î»
-	//uint8_t yaw_least_cost_enable;      //Æ«º½¿ØÖÆ×îÐ¡´ú¼ÛÊ¹ÄÜ±êÖ¾Î»
+	float throttle_control_output;	  	//ï¿½ï¿½ï¿½Å¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´Ê¹ï¿½ï¿½
+	float roll_control_output;			  	//ï¿½ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´Ê¹ï¿½ï¿½
+	float pitch_control_output;			  	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´Ê¹ï¿½ï¿½
+	float yaw_control_output;				  	//Æ«ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´Ê¹ï¿½ï¿½
+	float roll_outer_control_output;  	//ï¿½ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	float pitch_outer_control_output; 	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  float yaw_outer_control_output;	  	//Æ«ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  uint16_t motor_output[MOTOR_NUM];		//ï¿½ï¿½ï¿½Ó³ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´Ê¹ï¿½ï¿½
+  uint16_t temperature_control_output;//ï¿½Â¶È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´Ê¹ï¿½ï¿½
+	uint16_t yaw_ctrl_cnt;							//Æ«ï¿½ï¿½ï¿½ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ï¿½
+	YAW_CTRL_MODE yaw_ctrl_mode;				//Æ«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½
+	uint8_t yaw_ctrl_start;							//Æ«ï¿½ï¿½ï¿½ï¿½ï¿½Æ¿ï¿½Ê¼ï¿½ï¿½Ö¾Î»
+	uint8_t yaw_ctrl_end;								//Æ«ï¿½ï¿½ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
+	uint32_t start_time_ms;							//Æ«ï¿½ï¿½ï¿½ï¿½ï¿½Æ¿ï¿½Ê¼Ê±ï¿½ï¿½
+	uint32_t execution_time_ms;					//Æ«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½Ê±ï¿½ï¿½
+	uint8_t init;												//Æ«ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ö¾Î»
+	//uint8_t yaw_least_cost_enable;      //Æ«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ü±ï¿½Ö¾Î»
 	uint8_t roll_pitch_angle_limit_enable;
 	LOCK_STATE unlock_flag;
 }controller_output;
@@ -53,13 +53,15 @@ typedef struct
 void trackless_params_init(void);
 void ctrl_params_init(void);
 void steer_control(float *output);
+void steer_gyro_ctrl(void);
+void steer_angle_ctrl(void);
 void position_control(float fixed_threshold_cm,uint16_t feed_times);
 void distance_control(void);	
 
 void distance_control_with_speed_limit(float speed_limit);
 
 extern float steer_gyro_scale;
-extern float	steer_gyro_expect,steer_gyro_output,steer_angle_expect;
+extern float	steer_gyro_expect,steer_gyro_output,steer_angle_expect,steer_angle_error,steer_angle_output;
 
 extern controller steerangle_ctrl,steergyro_ctrl;
 extern controller distance_ctrl,azimuth_ctrl;

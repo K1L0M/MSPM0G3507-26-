@@ -8,6 +8,7 @@
 #include "us100.h"
 #include "vision.h"
 #include "nuart.h"
+#include "debug_if.h"
 
 void usart_irq_config(void)
 {
@@ -19,10 +20,10 @@ void usart_irq_config(void)
   NVIC_EnableIRQ(UART_1_INST_INT_IRQN);
   NVIC_EnableIRQ(UART_2_INST_INT_IRQN);
   NVIC_EnableIRQ(UART_3_INST_INT_IRQN);
-	DL_UART_clearInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX);//Çå³ýÖÐ¶Ï±êÖ¾Î»
-	DL_UART_clearInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX);//Çå³ýÖÐ¶Ï±êÖ¾Î»
-	DL_UART_clearInterruptStatus(UART_2_INST,DL_UART_INTERRUPT_RX);//Çå³ýÖÐ¶Ï±êÖ¾Î»
-	DL_UART_clearInterruptStatus(UART_3_INST,DL_UART_INTERRUPT_RX);//Çå³ýÖÐ¶Ï±êÖ¾Î»
+	DL_UART_clearInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX);//ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾Î»
+	DL_UART_clearInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX);//ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾Î»
+	DL_UART_clearInterruptStatus(UART_2_INST,DL_UART_INTERRUPT_RX);//ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾Î»
+	DL_UART_clearInterruptStatus(UART_3_INST,DL_UART_INTERRUPT_RX);//ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾Î»
 	
 	NVIC_SetPriority(SysTick_IRQn,0);
 }
@@ -32,9 +33,18 @@ void UART_0_INST_IRQHandler(void)
   if(DL_UART_getEnabledInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX) == DL_UART_INTERRUPT_RX)
   {
 		uint8_t ch = DL_UART_receiveData(UART_0_INST);
-		NCLink_Data_Prase_Prepare_Lite(ch);
-		DL_UART_clearInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX);//Çå³ýÖÐ¶Ï±êÖ¾Î»
+		DebugIF_FeedChar(ch);
+		 //NCLink_Data_Prase_Prepare_Lite(ch);
+		DL_UART_clearInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX);
   }
+
+	switch (DL_UART_Main_getPendingInterrupt(UART_0_INST))
+	{
+		case DL_UART_MAIN_IIDX_DMA_DONE_TX:
+			DebugIF_NotifyDMADone();
+		break;
+		default:break;
+	}
 }
 
 
@@ -44,7 +54,7 @@ void UART_1_INST_IRQHandler(void)
   {
 		uint8_t ch = DL_UART_receiveData(UART_1_INST);
 		SDK_Data_Receive_Prepare_1(ch);
-		DL_UART_clearInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX);//Çå³ýÖÐ¶Ï±êÖ¾Î»
+		DL_UART_clearInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX);//ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾Î»
   }
 }
 
@@ -55,7 +65,7 @@ void UART_2_INST_IRQHandler(void)
   {
 		uint8_t ch = DL_UART_receiveData(UART_2_INST);
 		bluetooth_app_prase(ch);
-		DL_UART_clearInterruptStatus(UART_2_INST,DL_UART_INTERRUPT_RX);//Çå³ýÖÐ¶Ï±êÖ¾Î»
+		DL_UART_clearInterruptStatus(UART_2_INST,DL_UART_INTERRUPT_RX);//ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾Î»
   }
 
 	switch (DL_UART_Main_getPendingInterrupt(UART2)) 
@@ -74,7 +84,7 @@ void UART_3_INST_IRQHandler(void)
 		uint8_t ch = DL_UART_receiveData(UART_3_INST);
 		if(com3_rx_cnt>=2) com3_rx_cnt=0;
 		com3_rx_buf[com3_rx_cnt++]=ch;
-		DL_UART_clearInterruptStatus(UART_3_INST,DL_UART_INTERRUPT_RX);//Çå³ýÖÐ¶Ï±êÖ¾Î»
+		DL_UART_clearInterruptStatus(UART_3_INST,DL_UART_INTERRUPT_RX);//ï¿½ï¿½ï¿½ï¿½Ð¶Ï±ï¿½Ö¾Î»
   }
 }
 
@@ -118,14 +128,14 @@ void usart1_send_bytes(unsigned char *buf, int len)
 }
 
 /***************************************
-º¯ÊýÃû:	void UART_SendBytes(uint32_t port,uint8_t *ubuf, uint32_t len)
-ËµÃ÷: ·¢ËÍN¸ö×Ö½Ú³¤¶ÈµÄÊý¾Ý
-Èë¿Ú:	uint32_t port-´®¿ÚºÅ
-			uint8_t *ubuf-´ý·¢ÉúÊý¾ÝµØÖ· 
-			uint32_t len-´ý·¢ËÍÊý¾Ý³¤¶È
-³ö¿Ú:	ÎÞ
-±¸×¢:	ÎÞ
-×÷Õß:	ÎÞÃû´´ÐÂ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:	void UART_SendBytes(uint32_t port,uint8_t *ubuf, uint32_t len)
+Ëµï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Ö½Ú³ï¿½ï¿½Èµï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½:	uint32_t port-ï¿½ï¿½ï¿½Úºï¿½
+			uint8_t *ubuf-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½Ö· 
+			uint32_t len-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½
+ï¿½ï¿½×¢:	ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ***************************************/
 void UART_SendBytes(UART_Regs *port,uint8_t *ubuf, uint32_t len)
 {
@@ -137,13 +147,13 @@ void UART_SendBytes(UART_Regs *port,uint8_t *ubuf, uint32_t len)
 }
 
 /***************************************
-º¯ÊýÃû:	void UART_SendByte(uint32_t port,uint8_t data)
-ËµÃ÷: ·¢ËÍ1¸ö×Ö½Ú³¤¶ÈµÄÊý¾Ý
-Èë¿Ú:	uint32_t port-´®¿ÚºÅ
-			uint8_t data-´ý·¢ÉúÊý¾Ý
-³ö¿Ú:	ÎÞ
-±¸×¢:	ÎÞ
-×÷Õß:	ÎÞÃû´´ÐÂ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:	void UART_SendByte(uint32_t port,uint8_t data)
+Ëµï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½Ö½Ú³ï¿½ï¿½Èµï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½:	uint32_t port-ï¿½ï¿½ï¿½Úºï¿½
+			uint8_t data-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½
+ï¿½ï¿½×¢:	ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½:	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ***************************************/
 void UART_SendByte(UART_Regs *port,uint8_t data)
 {
