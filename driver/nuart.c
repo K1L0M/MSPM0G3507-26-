@@ -34,7 +34,8 @@ void UART_0_INST_IRQHandler(void)
   {
 		uint8_t ch = DL_UART_receiveData(UART_0_INST);
 		DebugIF_FeedChar(ch);
-		DL_UART_clearInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX);//清除中断标志位
+		 //NCLink_Data_Prase_Prepare_Lite(ch);
+		DL_UART_clearInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX);
   }
 
 	switch (DL_UART_Main_getPendingInterrupt(UART_0_INST))
