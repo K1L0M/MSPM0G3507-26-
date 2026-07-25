@@ -20,30 +20,39 @@ void usart_irq_config(void)
   NVIC_EnableIRQ(UART_1_INST_INT_IRQN);
   NVIC_EnableIRQ(UART_2_INST_INT_IRQN);
   NVIC_EnableIRQ(UART_3_INST_INT_IRQN);
-	DL_UART_clearInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX);//Çå³ıÖĞ¶Ï±êÖ¾Î»
-	DL_UART_clearInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX);//Çå³ıÖĞ¶Ï±êÖ¾Î»
-	DL_UART_clearInterruptStatus(UART_2_INST,DL_UART_INTERRUPT_RX);//Çå³ıÖĞ¶Ï±êÖ¾Î»
-	DL_UART_clearInterruptStatus(UART_3_INST,DL_UART_INTERRUPT_RX);//Çå³ıÖĞ¶Ï±êÖ¾Î»
-	
+	DL_UART_clearInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX);//æ¸…é™¤ä¸­æ–­æ ‡å¿—ä½
+	DL_UART_clearInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX);//æ¸…é™¤ä¸­æ–­æ ‡å¿—ä½
+	DL_UART_clearInterruptStatus(UART_2_INST,DL_UART_INTERRUPT_RX);//æ¸…é™¤ä¸­æ–­æ ‡å¿—ä½
+	DL_UART_clearInterruptStatus(UART_3_INST,DL_UART_INTERRUPT_RX);//æ¸…é™¤ä¸­æ–­æ ‡å¿—ä½
+
 	NVIC_SetPriority(SysTick_IRQn,0);
 }
 
 void UART_0_INST_IRQHandler(void)
 {
-  if(DL_UART_getEnabledInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX) == DL_UART_INTERRUPT_RX)
-  {
+	uint32_t intStatus = DL_UART_getEnabledInterruptStatus(
+		UART_0_INST,
+		DL_UART_INTERRUPT_RX | DL_UART_INTERRUPT_OVERRUN_ERROR | DL_UART_INTERRUPT_DMA_DONE_TX
+	);
+
+	/* RX: if instead of while â€” MSPM0 re-triggers interrupt when FIFO non-empty */
+	if ((intStatus & DL_UART_INTERRUPT_RX) == DL_UART_INTERRUPT_RX)
+	{
 		uint8_t ch = DL_UART_receiveData(UART_0_INST);
 		DebugIF_FeedChar(ch);
-		 //NCLink_Data_Prase_Prepare_Lite(ch);
-		DL_UART_clearInterruptStatus(UART_0_INST,DL_UART_INTERRUPT_RX);
-  }
+	}
 
-	switch (DL_UART_Main_getPendingInterrupt(UART_0_INST))
+	/* Overrun: must be cleared or RX stalls permanently */
+	if ((intStatus & DL_UART_INTERRUPT_OVERRUN_ERROR) == DL_UART_INTERRUPT_OVERRUN_ERROR)
 	{
-		case DL_UART_MAIN_IIDX_DMA_DONE_TX:
-			DebugIF_NotifyDMADone();
-		break;
-		default:break;
+		DL_UART_clearInterruptStatus(UART_0_INST, DL_UART_INTERRUPT_OVERRUN_ERROR);
+	}
+
+	/* DMA TX done: unified bitmask style with RX */
+	if ((intStatus & DL_UART_INTERRUPT_DMA_DONE_TX) == DL_UART_INTERRUPT_DMA_DONE_TX)
+	{
+		DebugIF_NotifyDMADone();
+		DL_UART_clearInterruptStatus(UART_0_INST, DL_UART_INTERRUPT_DMA_DONE_TX);
 	}
 }
 
@@ -54,7 +63,7 @@ void UART_1_INST_IRQHandler(void)
   {
 		uint8_t ch = DL_UART_receiveData(UART_1_INST);
 		SDK_Data_Receive_Prepare_1(ch);
-		DL_UART_clearInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX);//Çå³ıÖĞ¶Ï±êÖ¾Î»
+		DL_UART_clearInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX);//æ¸…é™¤ä¸­æ–­æ ‡å¿—ä½
   }
 }
 
@@ -65,10 +74,10 @@ void UART_2_INST_IRQHandler(void)
   {
 		uint8_t ch = DL_UART_receiveData(UART_2_INST);
 		bluetooth_app_prase(ch);
-		DL_UART_clearInterruptStatus(UART_2_INST,DL_UART_INTERRUPT_RX);//Çå³ıÖĞ¶Ï±êÖ¾Î»
+		DL_UART_clearInterruptStatus(UART_2_INST,DL_UART_INTERRUPT_RX);//æ¸…é™¤ä¸­æ–­æ ‡å¿—ä½
   }
 
-	switch (DL_UART_Main_getPendingInterrupt(UART2)) 
+	switch (DL_UART_Main_getPendingInterrupt(UART2))
 	{
 		case DL_UART_MAIN_IIDX_DMA_DONE_TX:
 			get_systime(&uart2_dma_t);
@@ -84,7 +93,7 @@ void UART_3_INST_IRQHandler(void)
 		uint8_t ch = DL_UART_receiveData(UART_3_INST);
 		if(com3_rx_cnt>=2) com3_rx_cnt=0;
 		com3_rx_buf[com3_rx_cnt++]=ch;
-		DL_UART_clearInterruptStatus(UART_3_INST,DL_UART_INTERRUPT_RX);//Çå³ıÖĞ¶Ï±êÖ¾Î»
+		DL_UART_clearInterruptStatus(UART_3_INST,DL_UART_INTERRUPT_RX);//æ¸…é™¤ä¸­æ–­æ ‡å¿—ä½
   }
 }
 
@@ -118,6 +127,7 @@ int fputc(int ch, FILE *f)
 
 
 
+
 void usart1_send_bytes(unsigned char *buf, int len)
 {
   while(len--)
@@ -128,14 +138,14 @@ void usart1_send_bytes(unsigned char *buf, int len)
 }
 
 /***************************************
-º¯ÊıÃû:	void UART_SendBytes(uint32_t port,uint8_t *ubuf, uint32_t len)
-ËµÃ÷: ·¢ËÍN¸ö×Ö½Ú³¤¶ÈµÄÊı¾İ
-Èë¿Ú:	uint32_t port-´®¿ÚºÅ
-			uint8_t *ubuf-´ı·¢ÉúÊı¾İµØÖ· 
-			uint32_t len-´ı·¢ËÍÊı¾İ³¤¶È
-³ö¿Ú:	ÎŞ
-±¸×¢:	ÎŞ
-×÷Õß:	ÎŞÃû´´ĞÂ
+å‡½æ•°å:	void UART_SendBytes(uint32_t port,uint8_t *ubuf, uint32_t len)
+è¯´æ˜: å‘é€Nä¸ªå­—èŠ‚é•¿åº¦çš„æ•°æ®
+å‚æ•°:	uint32_t port-ä¸²å£å·
+			uint8_t *ubuf-å¾…å‘é€æ•°æ®åœ°å€
+			uint32_t len-å¾…å‘é€æ•°æ®é•¿åº¦
+è¿”å›:	æ— 
+å¤‡æ³¨:	æ— 
+åˆ›å»º:	å…¨ç£Š
 ***************************************/
 void UART_SendBytes(UART_Regs *port,uint8_t *ubuf, uint32_t len)
 {
@@ -147,19 +157,18 @@ void UART_SendBytes(UART_Regs *port,uint8_t *ubuf, uint32_t len)
 }
 
 /***************************************
-º¯ÊıÃû:	void UART_SendByte(uint32_t port,uint8_t data)
-ËµÃ÷: ·¢ËÍ1¸ö×Ö½Ú³¤¶ÈµÄÊı¾İ
-Èë¿Ú:	uint32_t port-´®¿ÚºÅ
-			uint8_t data-´ı·¢ÉúÊı¾İ
-³ö¿Ú:	ÎŞ
-±¸×¢:	ÎŞ
-×÷Õß:	ÎŞÃû´´ĞÂ
+å‡½æ•°å:	void UART_SendByte(uint32_t port,uint8_t data)
+è¯´æ˜: å‘é€1ä¸ªå­—èŠ‚é•¿åº¦çš„æ•°æ®
+å‚æ•°:	uint32_t port-ä¸²å£å·
+			uint8_t data-å¾…å‘é€æ•°æ®
+è¿”å›:	æ— 
+å¤‡æ³¨:	æ— 
+åˆ›å»º:	å…¨ç£Š
 ***************************************/
 void UART_SendByte(UART_Regs *port,uint8_t data)
 {
   DL_UART_Main_transmitDataBlocking(port, data);//DL_UART_Main_transmitData(UART_0_INST, *buf);
 }
-
 
 
 

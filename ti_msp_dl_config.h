@@ -79,7 +79,14 @@ extern "C" {
 #define GPIO_HFXOUT_PIN                                            DL_GPIO_PIN_6
 #define GPIO_HFXOUT_IOMUX                                        (IOMUX_PINCM11)
 #define CPUCLK_FREQ                                                     80000000
+/* Defines for SYSPLL_ERR_01 Workaround */
+/* Represent 1.000 as 1000 */
+#define FLOAT_TO_INT_SCALE                                               (1000U)
+#define FCC_EXPECTED_RATIO                                                  2000
+#define FCC_UPPER_BOUND                       (FCC_EXPECTED_RATIO * (1 + 0.003))
+#define FCC_LOWER_BOUND                       (FCC_EXPECTED_RATIO * (1 - 0.003))
 
+bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 
 
 /* Defines for PWM_0 */
@@ -202,9 +209,9 @@ extern "C" {
 #define GPIO_UART_0_IOMUX_TX                                     (IOMUX_PINCM21)
 #define GPIO_UART_0_IOMUX_RX_FUNC                      IOMUX_PINCM22_PF_UART0_RX
 #define GPIO_UART_0_IOMUX_TX_FUNC                      IOMUX_PINCM21_PF_UART0_TX
-#define UART_0_BAUD_RATE                                                  (9600)
-#define UART_0_IBRD_40_MHZ_9600_BAUD                                       (260)
-#define UART_0_FBRD_40_MHZ_9600_BAUD                                        (27)
+#define UART_0_BAUD_RATE                                                (115200)
+#define UART_0_IBRD_40_MHZ_115200_BAUD                                      (21)
+#define UART_0_FBRD_40_MHZ_115200_BAUD                                      (45)
 /* Defines for UART_1 */
 #define UART_1_INST                                                        UART1
 #define UART_1_INST_FREQUENCY                                           40000000
@@ -267,6 +274,8 @@ extern "C" {
 #define ADC12_0_ADCMEM_1_REF_VOLTAGE_V                                       3.3
 #define GPIO_ADC12_0_C1_PORT                                               GPIOA
 #define GPIO_ADC12_0_C1_PIN                                       DL_GPIO_PIN_26
+#define GPIO_ADC12_0_IOMUX_C1                                    (IOMUX_PINCM59)
+#define GPIO_ADC12_0_IOMUX_C1_FUNC                (IOMUX_PINCM59_PF_UNCONNECTED)
 
 
 
@@ -415,6 +424,7 @@ extern "C" {
 
 
 
+
 /* clang-format on */
 
 void SYSCFG_DL_init(void);
@@ -422,6 +432,8 @@ void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
 void SYSCFG_DL_SYSCTL_CLK_init(void);
+
+bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 void SYSCFG_DL_PWM_0_init(void);
 void SYSCFG_DL_PWM_1_init(void);
 void SYSCFG_DL_PWM_2_init(void);

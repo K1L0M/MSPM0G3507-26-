@@ -1972,6 +1972,19 @@ __STATIC_INLINE void DL_SYSCTL_disableSYSPLL(void)
 }
 
 /**
+ *  @brief      Enable the SYSPLL
+ *
+ *  Prior to enabling SYSPLL, it is recommended to call @ref DL_SYSCTL_configSYSPLL for
+ *  initialization.
+ *
+ *  @sa DL_SYSCTL_getClockStatus
+ */
+__STATIC_INLINE void DL_SYSCTL_enableSYSPLL(void)
+{
+    SYSCTL->SOCLOCK.HSCLKEN |= SYSCTL_HSCLKEN_SYSPLLEN_ENABLE;
+}
+
+/**
  *  @brief      Disable the HFXT
  *
  *  If HFXT is already enabled, application software must verify that either an
