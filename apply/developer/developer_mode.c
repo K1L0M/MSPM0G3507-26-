@@ -339,6 +339,26 @@ void sdk_duty_run(void)
 			speed_control_100hz(speed_ctrl_mode);
 		}
 		break;
+		case 24://steer_control转向控制测试
+		{
+			static int16_t prev_mode = -1;
+
+			if (prev_mode != 24)
+			{
+				pid_integrate_reset(&steergyro_ctrl);
+				pid_integrate_reset(&steerangle_ctrl);
+				prev_mode = 24;
+			}
+
+			speed_ctrl_mode = 1;
+			steer_control(&turn_ctrl_pwm);
+
+			speed_setup = 0;
+			speed_expect[0] =  turn_ctrl_pwm * steer_gyro_scale;
+			speed_expect[1] = -turn_ctrl_pwm * steer_gyro_scale;
+			speed_control_100hz(speed_ctrl_mode);
+		}
+		break;
 		case 50://陀螺仪角速度内环调试模式(理想rate=输入)
 		{
 			speed_ctrl_mode=1;//速度控制方式为期望值速度控制
