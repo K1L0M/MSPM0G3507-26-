@@ -342,17 +342,14 @@ void DebugIF_ProcessCmd(void)
     }
     // 相对角度转向 (case24)
         // 相对角度转向, 使用AZIMUTH绝对航向模式
+        // 相对角度转向 (case24)
+        // 相对角度转向 (case24)
+        // 相对角度转向 (case24)
     else if (strcmp(key, "turn") == 0) {
-        float relative = val;
-        float target = smartcar_imu.rpy_deg[_YAW] - relative;
-        if (target < 0) target += 360;
-        if (target >= 360) target -= 360;
         sdk_work_mode = 24;
-        trackless_output.yaw_ctrl_mode = AZIMUTH;
-        trackless_output.yaw_outer_control_output = target;
-        trackless_output.yaw_ctrl_start = 1;
+        trackless_output.yaw_outer_control_output = val;
         trackless_output.unlock_flag = UNLOCK;
-        snprintf(g_tx_buf, sizeof(g_tx_buf), "OK turn=%.1f -> %.1f\r\n", relative, target);
+        snprintf(g_tx_buf, sizeof(g_tx_buf), "OK turn=%.1f deg\r\n", val);
     }
     else {
         snprintf(g_tx_buf, sizeof(g_tx_buf), "ERR unknown \"%s\"\r\n", key);

@@ -339,19 +339,77 @@ void sdk_duty_run(void)
 			speed_control_100hz(speed_ctrl_mode);
 		}
 		break;
-		case 24://steer_control转向控制测试
+		case 24://相对角度转向,陀螺速率+角度累积
 		{
+			static float turn_target = 0;
+			static float turn_accum = 0;
+			static float turn_prev_yaw = 0;
+			static float turn_last_cmd = 0;
+			static uint8_t turn_running = 0;
 			static int16_t prev_mode = -1;
 
 			if (prev_mode != 24)
 			{
+				float input = trackless_output.yaw_outer_control_output;
+				turn_target = input;
+				turn_last_cmd = input;
+				turn_accum = 0;
+				turn_prev_yaw = smartcar_imu.rpy_deg[_YAW];
+				turn_running = (fabsf(input) > 0.5f) ? 1 : 0;
 				pid_integrate_reset(&steergyro_ctrl);
 				pid_integrate_reset(&steerangle_ctrl);
 				prev_mode = 24;
 			}
+			else if (!turn_running)
+			{
+				float input = trackless_output.yaw_outer_control_output;
+				if (fabsf(input - turn_last_cmd) > 0.1f && fabsf(input) > 0.5f)
+				{
+					turn_target = input;
+					turn_last_cmd = input;
+					turn_accum = 0;
+					turn_prev_yaw = smartcar_imu.rpy_deg[_YAW];
+					turn_running = 1;
+					pid_integrate_reset(&steergyro_ctrl);
+				}
+			}
 
 			speed_ctrl_mode = 1;
-			steer_control(&turn_ctrl_pwm);
+
+			if (turn_running)
+			{
+				float curr = smartcar_imu.rpy_deg[_YAW];
+				float dyaw = curr - turn_prev_yaw;
+				if (dyaw > 180) dyaw -= 360;
+				if (dyaw < -180) dyaw += 360;
+				turn_prev_yaw = curr;
+
+				// CW: yaw decreases, so -dyaw > 0
+				// CCW: yaw increases, so dyaw > 0
+				if (turn_target > 0)
+					turn_accum += -dyaw;  // accumulate CW
+				else
+					turn_accum += dyaw;   // accumulate CCW
+
+				float remaining = fabsf(turn_target) - turn_accum;
+				if (remaining < 3.0f || remaining < 0)
+				{
+					turn_running = 0;
+					turn_ctrl_pwm = 0;
+				}
+				else
+				{
+					float rate = remaining * 5.4f;
+					if (rate > 300.0f) rate = 300.0f;
+					steer_gyro_expect = (turn_target > 0) ? -rate : rate;
+					steer_gyro_ctrl();
+					turn_ctrl_pwm = -steergyro_ctrl.output;
+				}
+			}
+			else
+			{
+				turn_ctrl_pwm = 0;
+			}
 
 			speed_setup = 0;
 			speed_expect[0] =  turn_ctrl_pwm * steer_gyro_scale;
