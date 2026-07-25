@@ -339,7 +339,7 @@ void sdk_duty_run(void)
 			speed_control_100hz(speed_ctrl_mode);
 		}
 		break;
-		case 24://相对角度转向,陀螺速率+角度累积
+		case 24://相对角度转向,与mode2同链路
 		{
 			static float turn_target = 0;
 			static float turn_accum = 0;
@@ -371,6 +371,7 @@ void sdk_duty_run(void)
 					turn_prev_yaw = smartcar_imu.rpy_deg[_YAW];
 					turn_running = 1;
 					pid_integrate_reset(&steergyro_ctrl);
+					pid_integrate_reset(&steerangle_ctrl);
 				}
 			}
 
@@ -384,12 +385,10 @@ void sdk_duty_run(void)
 				if (dyaw < -180) dyaw += 360;
 				turn_prev_yaw = curr;
 
-				// CW: yaw decreases, so -dyaw > 0
-				// CCW: yaw increases, so dyaw > 0
 				if (turn_target > 0)
-					turn_accum += -dyaw;  // accumulate CW
+					turn_accum += -dyaw;  // CW
 				else
-					turn_accum += dyaw;   // accumulate CCW
+					turn_accum += dyaw;   // CCW
 
 				float remaining = fabsf(turn_target) - turn_accum;
 				if (remaining < 3.0f || remaining < 0)
@@ -399,9 +398,14 @@ void sdk_duty_run(void)
 				}
 				else
 				{
-					float rate = remaining * 5.4f;
-					if (rate > 300.0f) rate = 300.0f;
-					steer_gyro_expect = (turn_target > 0) ? -rate : rate;
+					// same chain as mode2 CLOCKWISE:
+					// steer_angle_ctrl() -> steer_gyro_ctrl()
+					float chunk = (remaining > 175.0f) ? 175.0f : remaining;
+					steer_angle_expect = (turn_target > 0)
+					                   ? (curr - chunk)
+					                   : (curr + chunk);
+					steer_angle_ctrl();
+					steer_gyro_expect = steer_angle_output;
 					steer_gyro_ctrl();
 					turn_ctrl_pwm = -steergyro_ctrl.output;
 				}
