@@ -35,11 +35,13 @@ void UART_0_INST_IRQHandler(void)
 		DL_UART_INTERRUPT_RX | DL_UART_INTERRUPT_OVERRUN_ERROR | DL_UART_INTERRUPT_DMA_DONE_TX
 	);
 
-	/* RX: if instead of while — MSPM0 re-triggers interrupt when FIFO non-empty */
+	/* RX: drain FIFO capped at 8 to prevent deadlock (1_2_FULL threshold) */
 	if ((intStatus & DL_UART_INTERRUPT_RX) == DL_UART_INTERRUPT_RX)
 	{
-		uint8_t ch = DL_UART_receiveData(UART_0_INST);
-		DebugIF_FeedChar(ch);
+		uint8_t drain = 8;
+		while (!DL_UART_isRXFIFOEmpty(UART_0_INST) && drain--) {
+			DebugIF_FeedChar(DL_UART_receiveData(UART_0_INST));
+		}
 	}
 
 	/* Overrun: must be cleared or RX stalls permanently */
@@ -128,6 +130,7 @@ int fputc(int ch, FILE *f)
 
 
 
+
 void usart1_send_bytes(unsigned char *buf, int len)
 {
   while(len--)
@@ -169,8 +172,3 @@ void UART_SendByte(UART_Regs *port,uint8_t data)
 {
   DL_UART_Main_transmitDataBlocking(port, data);//DL_UART_Main_transmitData(UART_0_INST, *buf);
 }
-
-
-
-
-

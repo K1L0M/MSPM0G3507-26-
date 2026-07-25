@@ -25,6 +25,9 @@ static volatile int g_dma_busy = 0;
 float debug_rate_target = 0;
 uint8_t debug_rate_enable = 0;
 
+volatile uint8_t g_odo_return_trigger = 0;
+volatile uint8_t g_odo_reset_trigger  = 0;
+
 /* ---- UART TX helper (waits for any ongoing DMA to finish first) ---- */
 static void uart_send(const char *str)
 {
@@ -63,6 +66,15 @@ void DebugIF_ProcessCmd(void)
     int   n;
 
     /* ---- No-arg commands ---- */
+    if (strcmp(cmd, "RET") == 0) {
+        g_odo_return_trigger = 1;
+        return;
+    }
+    if (strcmp(cmd, "RST") == 0) {
+        g_odo_reset_trigger = 1;
+        g_odo_return_trigger = 0;
+        return;
+    }
     if (strcmp(cmd, "help") == 0) {
         uart_send("help info speed angle trace gyro save lock unlock\r\n"
                   "sp= kp= ki= kd= spmode=\r\n"
@@ -409,4 +421,15 @@ void DebugIF_FlushTelemetry(void)
 void DebugIF_NotifyDMADone(void)
 {
     g_dma_busy = 0;
+}
+
+void DebugIF_Print(const char *str)
+{
+	while (g_dma_busy) {
+		/* Wait for DMA telemetry to complete */
+	}
+	while (*str) {
+		DL_UART_Main_transmitDataBlocking(UART_0_INST, (uint32_t)(*str));
+		str++;
+	}
 }

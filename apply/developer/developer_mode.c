@@ -3,6 +3,7 @@
 #include "subtask.h"
 #include "user.h"
 #include "developer_mode.h"
+#include "debug_if.h"
 
 int16_t sdk_work_mode=0;
 
@@ -434,6 +435,68 @@ void sdk_duty_run(void)
 			speed_expect[0]=turn_ctrl_pwm*steer_gyro_scale;//左轮期望速度
 			speed_expect[1]=-turn_ctrl_pwm*steer_gyro_scale;//右轮期望速度
 			//速度控制
+			speed_control_100hz(speed_ctrl_mode);
+		}
+		break;
+		case 25: // Odom round-trip: RET=record start/return, RST=reset
+		{
+			static uint8_t  state = 0;
+			static float    start_x = 0, start_y = 0;
+			static int16_t  prev_mode = -1;
+			if (prev_mode != 25) {
+				state     = 0;
+				prev_mode = 25;
+				g_odo_return_trigger = 0;
+				g_odo_reset_trigger  = 0;
+			}
+			switch (state) {
+				case 0: // WAIT - wait for RET to record start
+					speed_setup = 0; speed_expect[0]=0; speed_expect[1]=0;
+					trackless_output.unlock_flag = UNLOCK;
+					if (g_odo_return_trigger) {
+						g_odo_return_trigger = 0;
+						start_x = smartcar_imu.state_estimation.pos.x;
+						start_y = smartcar_imu.state_estimation.pos.y;
+						ngs_nav_ctrl.ctrl_finish_flag = 0;
+						state = 1;
+					}
+					break;
+				case 1: // PUSH - manual push phase
+					speed_setup = 0; speed_expect[0]=0; speed_expect[1]=0;
+					trackless_output.unlock_flag = UNLOCK;
+					if (g_odo_return_trigger) {
+						g_odo_return_trigger = 0;
+						ngs_nav_ctrl.x = start_x; ngs_nav_ctrl.y = start_y;
+						ngs_nav_ctrl.update_flag = 1;
+						state = 2;
+					}
+					if (g_odo_reset_trigger) { g_odo_reset_trigger = 0; state = 0; }
+					break;
+				case 2: // RETURN - auto return
+					position_control(3.0f, 5);
+					turn_ctrl_pwm = steer_gyro_output;
+					speed_setup   = distance_ctrl.output;
+					speed_expect[0] = speed_setup - turn_ctrl_pwm * steer_gyro_scale;
+					speed_expect[1] = speed_setup + turn_ctrl_pwm * steer_gyro_scale;
+					trackless_output.unlock_flag = UNLOCK;
+					if (ngs_nav_ctrl.ctrl_finish_flag == 1) {
+						float err_x = smartcar_imu.state_estimation.pos.x - start_x;
+						float err_y = smartcar_imu.state_estimation.pos.y - start_y;
+						float err_d = sqrtf(err_x * err_x + err_y * err_y);
+						char buf[64];
+						snprintf(buf, sizeof(buf),
+							"ODO_DONE dX=%.2f dY=%.2f Err=%.2f\r\n",
+							err_x, err_y, err_d);
+						DebugIF_Print(buf);
+						state = 3;
+					}
+					break;
+				default: // DONE - stop, wait for RST
+					speed_setup = 0; speed_expect[0]=0; speed_expect[1]=0;
+					if (g_odo_reset_trigger) { g_odo_reset_trigger = 0; state = 0; }
+					break;
+			}
+			speed_ctrl_mode = 1;
 			speed_control_100hz(speed_ctrl_mode);
 		}
 		break;
