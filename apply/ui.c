@@ -1519,7 +1519,33 @@ void screen_display(void)
 			LCD_clear_L(0,6);  display_6_8_string(0,6,buf);
 		}
 		break;
-		default:
+		case 12:
+		{
+			char buf[40];
+
+			LCD_clear_L(0,0);  display_6_8_string(0,0,"DET UART1");					display_6_8_number(110,0,page_number+1);
+
+			sprintf(buf, "emp:%lu", (unsigned long)g_detection.empty_frame_count);
+			LCD_clear_L(0,1);  display_6_8_string(0,1,buf);
+
+			sprintf(buf, "fc:%lu", (unsigned long)g_detection.frame_count);
+			LCD_clear_L(0,2);  display_6_8_string(0,2,buf);
+
+			sprintf(buf, "num:%u", g_detection.num_targets);
+			LCD_clear_L(0,3);  display_6_8_string(0,3,buf);
+
+			if (g_detection.num_targets > 0) {
+				DetectionTarget *t = &g_detection.targets[0];
+				sprintf(buf, "id=%u c=%.2f d=%.1f", t->ball_id, t->conf, t->dist);
+				LCD_clear_L(0,4);  display_6_8_string(0,4,buf);
+				sprintf(buf, "cx=%u", t->cx);
+				LCD_clear_L(0,5);  display_6_8_string(0,5,buf);
+			} else {
+				LCD_clear_L(0,4);  display_6_8_string(0,4,"no target");
+			}
+		}
+		break;
+				default:
 		{
 			LCD_clear_L(0,0);	display_6_8_string(0,0,"basic");									display_6_8_number(110,0,page_number+1);
 		}

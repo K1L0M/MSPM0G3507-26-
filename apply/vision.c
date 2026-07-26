@@ -530,3 +530,167 @@ void SDK_Data_Receive_Prepare_2(uint8_t data)
   }
   else state[label] = 0;
 }
+
+/************************************************************************/
+// K230 text line parser: COUNT=N, BALLid,CONF=f,DIST=f,CX=d, NONE
+DetectionFrame g_detection;
+
+static char     det_line[64];
+static uint8_t  det_line_idx = 0;
+static uint8_t  det_pending = 0;
+static uint8_t  det_expected = 0;
+
+static float parse_float_simple(const char *s)
+{
+    float whole = 0.0f;
+    while (*s >= '0' && *s <= '9') {
+        whole = whole * 10.0f + (float)(*s - '0');
+        s++;
+    }
+    if (*s != '.') return whole;
+    s++;
+    float frac = 0.0f;
+    float div = 1.0f;
+    while (*s >= '0' && *s <= '9') {
+        frac = frac * 10.0f + (float)(*s - '0');
+        div *= 10.0f;
+        s++;
+    }
+    return whole + frac / div;
+}
+
+static uint16_t parse_uint16_simple(const char *s)
+{
+    uint16_t v = 0;
+    while (*s >= '0' && *s <= '9') {
+        v = v * 10 + (uint16_t)(*s - '0');
+        s++;
+    }
+    return v;
+}
+
+static void det_emit_frame(void)
+{
+    g_detection.num_targets = det_pending;
+    g_detection.frame_ready = 1;
+    g_detection.frame_count++;
+    if (det_pending == 0) {
+        g_detection.empty_frame_count++;
+    }
+    det_pending = 0;
+    det_expected = 0;
+}
+
+static void det_parse_line(const char *line)
+{
+    /* COUNT=N */
+    if (line[0] == 'C' && line[1] == 'O' && line[2] == 'U' &&
+        line[3] == 'N' && line[4] == 'T' && line[5] == '=') {
+        if (det_pending > 0) {
+            det_emit_frame();
+        }
+        det_expected = (uint8_t)parse_uint16_simple(line + 6);
+        return;
+    }
+
+    /* NONE */
+    if (line[0] == 'N' && line[1] == 'O' && line[2] == 'N' &&
+        line[3] == 'E') {
+        det_emit_frame();
+        return;
+    }
+
+    /* BALLid,CONF=f,DIST=f,CX=d */
+    if (line[0] == 'B' && line[1] == 'A' && line[2] == 'L' &&
+        line[3] == 'L') {
+        if (det_pending >= MAX_DETECTION_TARGETS) return;
+
+        DetectionTarget *t = &g_detection.targets[det_pending];
+        const char *p = line + 4;
+
+        t->ball_id = (uint8_t)parse_uint16_simple(p);
+        while (*p && *p != ',') p++;
+        if (*p == ',') p++;
+
+        if (p[0] == 'C' && p[1] == 'O' && p[2] == 'N' &&
+            p[3] == 'F' && p[4] == '=') {
+            p += 5;
+            t->conf = parse_float_simple(p);
+        }
+        while (*p && *p != ',') p++;
+        if (*p == ',') p++;
+
+        if (p[0] == 'D' && p[1] == 'I' && p[2] == 'S' &&
+            p[3] == 'T' && p[4] == '=') {
+            p += 5;
+            t->dist = parse_float_simple(p);
+        }
+        while (*p && *p != ',') p++;
+        if (*p == ',') p++;
+
+        if (p[0] == 'C' && p[1] == 'X' && p[2] == '=') {
+            p += 3;
+            t->cx = parse_uint16_simple(p);
+        }
+
+        det_pending++;
+        if (det_expected > 0 && det_pending >= det_expected) {
+            det_emit_frame();
+        }
+        return;
+    }
+
+    /* bare number (e.g. "1") = COUNT without prefix */
+    {
+        uint8_t is_num = 1;
+        const char *c;
+        for (c = line; *c; c++) {
+            if (*c < '0' || *c > '9') { is_num = 0; break; }
+        }
+        if (is_num && *line) {
+            if (det_pending > 0) {
+                det_emit_frame();
+            }
+            det_expected = (uint8_t)parse_uint16_simple(line);
+        }
+    }
+}
+
+void Detection_Data_Receive(uint8_t ch)
+{
+    if (ch == '\r') return;
+
+    if (ch == '\n') {
+        if (det_line_idx > 0) {
+            det_line[det_line_idx] = '\0';
+            det_parse_line(det_line);
+            det_line_idx = 0;
+        }
+        return;
+    }
+
+    if (det_line_idx < sizeof(det_line) - 1) {
+        det_line[det_line_idx++] = (char)ch;
+    } else {
+        det_line_idx = 0;
+    }
+}
+
+void Detection_ProcessFrame(void)
+{
+    if (!g_detection.frame_ready) return;
+    g_detection.frame_ready = 0;
+
+    char buf[128];
+    uint8_t i;
+    for (i = 0; i < g_detection.num_targets; i++) {
+        DetectionTarget *t = &g_detection.targets[i];
+        int len = snprintf(buf, sizeof(buf),
+            "DET id=%d conf=%.2f dist=%.1f cx=%d\r\n",
+            t->ball_id, t->conf, t->dist, t->cx);
+        if (len > 0 && len < (int)sizeof(buf)) {
+            DebugIF_Print(buf);
+        }
+    }
+}
+

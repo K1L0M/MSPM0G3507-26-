@@ -69,5 +69,26 @@ void SDK_Data_Receive_Prepare_2(uint8_t data);
 extern Target_Check camera1,camera2;
 
 
+
+#define MAX_DETECTION_TARGETS 10
+
+typedef struct {
+    uint8_t  ball_id;
+    float    conf;
+    float    dist;
+    uint16_t cx;
+} DetectionTarget;
+
+typedef struct {
+    uint8_t         num_targets;
+    DetectionTarget targets[MAX_DETECTION_TARGETS];
+    volatile uint8_t frame_ready;
+    uint32_t        frame_count;
+    uint32_t        empty_frame_count;
+} DetectionFrame;
+
+extern DetectionFrame g_detection;
+void Detection_Data_Receive(uint8_t ch);
+void Detection_ProcessFrame(void);
 #endif
 

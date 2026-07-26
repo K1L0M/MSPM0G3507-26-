@@ -225,9 +225,9 @@ bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 #define GPIO_UART_1_IOMUX_TX                                     (IOMUX_PINCM19)
 #define GPIO_UART_1_IOMUX_RX_FUNC                      IOMUX_PINCM20_PF_UART1_RX
 #define GPIO_UART_1_IOMUX_TX_FUNC                      IOMUX_PINCM19_PF_UART1_TX
-#define UART_1_BAUD_RATE                                                (256000)
-#define UART_1_IBRD_40_MHZ_256000_BAUD                                       (9)
-#define UART_1_FBRD_40_MHZ_256000_BAUD                                      (49)
+#define UART_1_BAUD_RATE                                                (115200)
+#define UART_1_IBRD_40_MHZ_115200_BAUD                                      (21)
+#define UART_1_FBRD_40_MHZ_115200_BAUD                                      (45)
 /* Defines for UART_2 */
 #define UART_2_INST                                                        UART2
 #define UART_2_INST_FREQUENCY                                           40000000

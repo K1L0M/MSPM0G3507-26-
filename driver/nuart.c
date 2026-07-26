@@ -63,8 +63,10 @@ void UART_1_INST_IRQHandler(void)
 {
   if(DL_UART_getEnabledInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX) == DL_UART_INTERRUPT_RX)
   {
-		uint8_t ch = DL_UART_receiveData(UART_1_INST);
-		SDK_Data_Receive_Prepare_1(ch);
+		uint8_t drain = 8;
+		while (!DL_UART_isRXFIFOEmpty(UART_1_INST) && drain--) {
+			Detection_Data_Receive(DL_UART_receiveData(UART_1_INST));
+		}
 		DL_UART_clearInterruptStatus(UART_1_INST,DL_UART_INTERRUPT_RX);//清除中断标志位
   }
 }
