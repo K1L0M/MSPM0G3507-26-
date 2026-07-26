@@ -19,7 +19,6 @@ static char  g_tx_buf[256];
 static uint16_t g_telemetry_cnt = 0;
 static volatile int g_telemetry_pending = 0;
 static char  g_telemetry_buf[384];
-static char  g_telemetry_dma_buf[384]; /* DMA-safe buffer, double-buffered */
 static volatile int g_dma_busy = 0;
 
 float debug_rate_target = 0;
@@ -407,29 +406,12 @@ void DebugIF_FlushTelemetry(void)
     if (len <= 0 || len >= (int)sizeof(g_telemetry_buf)) return;
 
     g_dma_busy = 1;
-    memcpy(g_telemetry_dma_buf, g_telemetry_buf, len);
 
     DL_DMA_disableChannel(DMA, DMA_CH1_CHAN_ID);
-
-    /* Proper TX FIFO flush via DL_UART_changeConfig (SDK documented path):
-       disables UART, waits for current TX to finish, clears FEN to flush FIFO.
-       Direct CTL0 writes on an enabled UART = unpredictable per SDK. */
-    DL_UART_changeConfig(UART_0_INST);
-    DL_UART_enableFIFOs(UART_0_INST);
-    DL_UART_enable(UART_0_INST);
-
-    /* Clear stale DMA done + TX interrupt flags so no pending trigger fires */
-    DL_UART_clearInterruptStatus(UART_0_INST,
-        DL_UART_INTERRUPT_DMA_DONE_TX | DL_UART_INTERRUPT_TX);
-
-    DL_DMA_setSrcAddr(DMA, DMA_CH1_CHAN_ID, (uint32_t)g_telemetry_dma_buf);
+    DL_DMA_setSrcAddr(DMA, DMA_CH1_CHAN_ID, (uint32_t)g_telemetry_buf);
     DL_DMA_setDestAddr(DMA, DMA_CH1_CHAN_ID, (uint32_t)(&UART_0_INST->TXDATA));
     DL_DMA_setTransferSize(DMA, DMA_CH1_CHAN_ID, len);
-
-    /* Critical section: prevent ISR from stretching the reconfig window */
-    __disable_irq();
     DL_DMA_enableChannel(DMA, DMA_CH1_CHAN_ID);
-    __enable_irq();
 }
 
 /* ---- Called from UART0 ISR on DMA_DONE_TX ---- */
