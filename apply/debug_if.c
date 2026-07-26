@@ -108,7 +108,7 @@ void DebugIF_ProcessCmd(void)
                   "sp= kp= ki= kd= spmode=\r\n"
                   "pkp= pki= pkd= tkp= tki= tkd=\r\n"
                   "gkp= gki= gkd= ts= gs= dz= mode=\r\n"
-                  "sakp= sakd= yaw= rate= turn=\r\n");
+                  "sakp= sakd= yaw= rate= turn= radius=\r\n");
         return;
     }
     if (strcmp(cmd, "info") == 0) {
@@ -117,13 +117,13 @@ void DebugIF_ProcessCmd(void)
             "pkp=%.0f pki=%.0f pkd=%.0f ts=%.2f dz=%.1f\r\n"
             "tkp=%.0f tki=%.0f tkd=%.0f\r\n"
             "gkp=%.1f gki=%.2f gkd=%.1f gs=%.2f\r\n"
-            "sakp=%.1f sakd=%.1f\r\n",
+            "sakp=%.1f sakd=%.1f radius=%.2f\r\n",
             speed_setup, speed_kp, speed_ki, speed_kd, speed_pid_mode,
             seektrack_ctrl[0].kp, seektrack_ctrl[0].ki, seektrack_ctrl[0].kd, turn_scale,
             steer_deadzone,
             seektrack_ctrl[1].kp, seektrack_ctrl[1].ki, seektrack_ctrl[1].kd,
             steergyro_ctrl.kp, steergyro_ctrl.ki, steergyro_ctrl.kd, steer_gyro_scale,
-            steerangle_ctrl.kp, steerangle_ctrl.kd);
+            steerangle_ctrl.kp, steerangle_ctrl.kd, trackless_motor.wheel_radius_cm);
         uart_send(g_tx_buf);
         return;
     }
@@ -390,6 +390,12 @@ void DebugIF_ProcessCmd(void)
         trackless_output.yaw_outer_control_output = val;
         trackless_output.unlock_flag = UNLOCK;
         snprintf(g_tx_buf, sizeof(g_tx_buf), "OK turn=%.1f deg\r\n", val);
+    }
+    else if (strcmp(key, "radius") == 0) {
+        trackless_motor.wheel_radius_cm = val;
+        trackless_motor.wheel_radius_cm = constrain_float(trackless_motor.wheel_radius_cm, 0.1f, 20.0f);
+        WriteFlashParameter(TIRE_RADIUS_CM_CFG, trackless_motor.wheel_radius_cm, &Trackless_Params);
+        snprintf(g_tx_buf, sizeof(g_tx_buf), "OK radius=%.2f cm\r\n", trackless_motor.wheel_radius_cm);
     }
     else {
         snprintf(g_tx_buf, sizeof(g_tx_buf), "ERR unknown \"%s\"\r\n", key);
