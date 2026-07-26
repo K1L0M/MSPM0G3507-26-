@@ -77,9 +77,6 @@ int main(void)
   {
 		screen_display();//屏幕显示
 		adc_statemachine();//adc采集状态机
-		DebugIF_ProcessCmd();//调试指令处理
-		Detection_ProcessFrame();
-		DebugIF_FlushTelemetry();//遥测输出(非阻塞)
   }
 }
 
@@ -146,7 +143,9 @@ void duty_1000hz(void)
 ***************************************/
 void duty_100hz(void)
 {
-	//NCLink_SEND_StateMachine();
+	DebugIF_ProcessCmd();
+	Detection_ProcessFrame();
+	DebugIF_FlushTelemetry();
 	DebugIF_RequestTelemetry();
 }
 
