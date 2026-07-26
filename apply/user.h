@@ -7,10 +7,10 @@
 #define right_motor_encoder_dir_default  0
 #define left_motion_dir_default   0
 #define right_motion_dir_default  0
-#define tire_radius_cm_default  2.40f			 //ÂÖÌ¥°ë¾¶£¬µ¥Î»Îªcm
-#define pulse_cnt_per_circle_default  1060 //Êµ¼ÊÂÖ×Ó×ª¶¯Ò»ÖÜµÄÂö³åÊıÁ¿ 530 1080 40750
-#define servo_median_value1_default   1500  //¶æ»ú»úĞµÖĞÖµ
-#define servo_median_value2_default   1500  //¶æ»ú»úĞµÖĞÖµ
+#define tire_radius_cm_default  3.25f			 //è½®èƒåŠå¾„ï¼Œå•ä½ä¸ºcm
+#define pulse_cnt_per_circle_default  1456 //å®é™…è½®å­è½¬åŠ¨ä¸€å‘¨çš„è„‰å†²æ•°é‡ 530 1080 40750
+#define servo_median_value1_default   1500  //èˆµæœºæœºæ¢°ä¸­å€¼
+#define servo_median_value2_default   1500  //èˆµæœºæœºæ¢°ä¸­å€¼
 #define rangefinder_type_default 0
 
 #define no_voltage_enable_default 0
@@ -19,67 +19,67 @@
 
 
 /***********************************************************************************************************************/
-#define balance_speed_ctrl_enable_default 1			//×ÔÆ½ºâ¿ØÖÆÊ±,ËÙ¶È¿ØÖÆÊ¹ÄÜÄ¬ÈÏÖµ
-#define balance_steer_ctrl_enable_default 0			//×ÔÆ½ºâ¿ØÖÆÊ±,×ªÏò¿ØÖÆÊ¹ÄÜÄ¬ÈÏÖµ
-#define balance_ctrl_number_enable_default 1		//×ÔÆ½ºâ¿ØÖÆÄ£Ê½Ä¬ÈÏÖµ,ÔİÎ´ÓÃµ½
+#define balance_speed_ctrl_enable_default 1			//è‡ªå¹³è¡¡æ§åˆ¶æ—¶,é€Ÿåº¦æ§åˆ¶ä½¿èƒ½é»˜è®¤å€¼
+#define balance_steer_ctrl_enable_default 0			//è‡ªå¹³è¡¡æ§åˆ¶æ—¶,è½¬å‘æ§åˆ¶ä½¿èƒ½é»˜è®¤å€¼
+#define balance_ctrl_number_enable_default 1		//è‡ªå¹³è¡¡æ§åˆ¶æ¨¡å¼é»˜è®¤å€¼,æš‚æœªç”¨åˆ°
 
 
 
 /***********************************************************************************************************************/
-#define speed_expect_default 			80.0f			//×ÔÖ÷Ñ°¼£Ê±£¬ËÙ¶ÈÄ¬ÈÏÉè¶¨Öµ
-#define work_mode_default   			0 				//Ğ¡³µ¹¤×÷Ä£Ê½³ö³§Ä¬ÈÏÖµ
+#define speed_expect_default 			40.0f			//è‡ªä¸»å¯»è¿¹æ—¶ï¼Œé€Ÿåº¦é»˜è®¤è®¾å®šå€¼
+#define work_mode_default   			0 				//å°è½¦å·¥ä½œæ¨¡å¼å‡ºå‚é»˜è®¤å€¼
 
 
 
 /***********************************************************************************************************************/
-#define turn_kp_default1						30.0f 	//»ùÓÚºìÍâ¶Ô¹ÜÊ¶±ğ¹ì¼£Ê±,×ÔÖ÷Ñ°¼£µÄÎ»ÖÃ¿ØÖÆÆ÷±ÈÀı²ÎÊıKP	
-#define turn_ki_default1						0.0f		//»ùÓÚºìÍâ¶Ô¹ÜÊ¶±ğ¹ì¼£Ê±,×ÔÖ÷Ñ°¼£µÄÎ»ÖÃ¿ØÖÆÆ÷»ı·Ö²ÎÊıKI	
-#define turn_kd_default1						150			//»ùÓÚºìÍâ¶Ô¹ÜÊ¶±ğ¹ì¼£Ê±,×ÔÖ÷Ñ°¼£µÄÎ»ÖÃ¿ØÖÆÆ÷Î¢·Ö²ÎÊıKD	
-#define turn_scale_default        	0.15f		//×ªÏò¿ØÖÆÆ÷Êä³ö×ª»»µ½ÂÖ×ÓÆÚÍû²îËÙÊ±µÄÁ¿³Ì×ª»»ÏµÊı
-#define turn_kp_default2						20.0f		//»ùÓÚÊÓ¾õopenmvÊ¶±ğ¹ì¼£Ê±,×ÔÖ÷Ñ°¼£µÄÎ»ÖÃ¿ØÖÆÆ÷±ÈÀı²ÎÊıKP
-#define turn_ki_default2						0.0f		//»ùÓÚÊÓ¾õopenmvÊ¶±ğ¹ì¼£Ê±,×ÔÖ÷Ñ°¼£µÄÎ»ÖÃ¿ØÖÆÆ÷»ı·Ö²ÎÊıKI
-#define turn_kd_default2						5.0f	  //»ùÓÚÊÓ¾õopenmvÊ¶±ğ¹ì¼£Ê±,×ÔÖ÷Ñ°¼£µÄÎ»ÖÃ¿ØÖÆÆ÷Î¢·Ö²ÎÊıKD	
+#define turn_kp_default1						40.0f 	//åŸºäºçº¢å¤–å¯¹ç®¡è¯†åˆ«è½¨è¿¹æ—¶,è‡ªä¸»å¯»è¿¹çš„ä½ç½®æ§åˆ¶å™¨æ¯”ä¾‹å‚æ•°KP	
+#define turn_ki_default1						0.0f		//åŸºäºçº¢å¤–å¯¹ç®¡è¯†åˆ«è½¨è¿¹æ—¶,è‡ªä¸»å¯»è¿¹çš„ä½ç½®æ§åˆ¶å™¨ç§¯åˆ†å‚æ•°KI	
+#define turn_kd_default1						0			//åŸºäºçº¢å¤–å¯¹ç®¡è¯†åˆ«è½¨è¿¹æ—¶,è‡ªä¸»å¯»è¿¹çš„ä½ç½®æ§åˆ¶å™¨å¾®åˆ†å‚æ•°KD	
+#define turn_scale_default        	0.12f		//è½¬å‘æ§åˆ¶å™¨è¾“å‡ºè½¬æ¢åˆ°è½®å­æœŸæœ›å·®é€Ÿæ—¶çš„é‡ç¨‹è½¬æ¢ç³»æ•°
+#define turn_kp_default2						20.0f		//åŸºäºè§†è§‰openmvè¯†åˆ«è½¨è¿¹æ—¶,è‡ªä¸»å¯»è¿¹çš„ä½ç½®æ§åˆ¶å™¨æ¯”ä¾‹å‚æ•°KP
+#define turn_ki_default2						0.0f		//åŸºäºè§†è§‰openmvè¯†åˆ«è½¨è¿¹æ—¶,è‡ªä¸»å¯»è¿¹çš„ä½ç½®æ§åˆ¶å™¨ç§¯åˆ†å‚æ•°KI
+#define turn_kd_default2						5.0f	  //åŸºäºè§†è§‰openmvè¯†åˆ«è½¨è¿¹æ—¶,è‡ªä¸»å¯»è¿¹çš„ä½ç½®æ§åˆ¶å™¨å¾®åˆ†å‚æ•°KD	
 
 
 
 /***********************************************************************************************************************/
-#define steer_gyro_kp_default  		1.0f			//×ªÏòÍÓÂİÒÇ¿ØÖÆÊ±£¬½ÇËÙ¶ÈÄÚ»·±ÈÀıÏµÊıKP-1.5
-#define steer_gyro_ki_default  		0.0f			//×ªÏòÍÓÂİÒÇ¿ØÖÆÊ±£¬½ÇËÙ¶ÈÄÚ»·»ı·ÖÏµÊıKI-0
-#define steer_gyro_kd_default  		1.0f			//×ªÏòÍÓÂİÒÇ¿ØÖÆÊ±£¬½ÇËÙ¶ÈÄÚ»·Î¢·ÖÏµÊıKD-3	
-#define	steer_gyro_scale_default	0.5f			//×ªÏòÍÓÂİÒÇ¿ØÖÆÊ±£¬½ÇËÙ¶ÈÄÚ»·¿ØÖÆÆ÷Êä³ö×ª»»µ½ÂÖ×ÓÆÚÍû²îËÙÊ±µÄÁ¿³Ì×ª»»ÏµÊı
+#define steer_gyro_kp_default  		0.4f			//è½¬å‘é™€èºä»ªæ§åˆ¶æ—¶ï¼Œè§’é€Ÿåº¦å†…ç¯æ¯”ä¾‹ç³»æ•°KP-1.5
+#define steer_gyro_ki_default  		0.04f			//è½¬å‘é™€èºä»ªæ§åˆ¶æ—¶ï¼Œè§’é€Ÿåº¦å†…ç¯ç§¯åˆ†ç³»æ•°KI-0
+#define steer_gyro_kd_default  		0.0f			//è½¬å‘é™€èºä»ªæ§åˆ¶æ—¶ï¼Œè§’é€Ÿåº¦å†…ç¯å¾®åˆ†ç³»æ•°KD-3	
+#define	steer_gyro_scale_default	0.5f			//è½¬å‘é™€èºä»ªæ§åˆ¶æ—¶ï¼Œè§’é€Ÿåº¦å†…ç¯æ§åˆ¶å™¨è¾“å‡ºè½¬æ¢åˆ°è½®å­æœŸæœ›å·®é€Ÿæ—¶çš„é‡ç¨‹è½¬æ¢ç³»æ•°
 
 
 
 
 /***********************************************************************************************************************/
-#define speed_kp_default  				8.0f			//ËÙ¶È¿ØÖÆÆ÷±ÈÀı²ÎÊıKP
-#define	speed_ki_default					0.6f			//ËÙ¶È¿ØÖÆÆ÷»ı·Ö²ÎÊıKI
-#define	speed_kd_default					0.0f			//ËÙ¶È¿ØÖÆÆ÷Î¢·Ö²ÎÊıKD
+#define speed_kp_default  				35.0f			//é€Ÿåº¦æ§åˆ¶å™¨æ¯”ä¾‹å‚æ•°KP
+#define	speed_ki_default					0.70f			//é€Ÿåº¦æ§åˆ¶å™¨ç§¯åˆ†å‚æ•°KI
+#define	speed_kd_default					0.0f			//é€Ÿåº¦æ§åˆ¶å™¨å¾®åˆ†å‚æ•°KD
 
 
 
 /***********************************************************************************************************************/
-#define balance_angle_kp1_default  				135.0f	//×ÔÆ½ºâµ¥»·½Ç¶È¿ØÖÆÆ÷±ÈÀı²ÎÊıKP
-#define balance_angle_ki1_default  				0.0f		//×ÔÆ½ºâµ¥»·½Ç¶È¿ØÖÆÆ÷»ı·Ö²ÎÊıKI
-#define balance_angle_kd1_default  				5.0f		//×ÔÆ½ºâµ¥»·½Ç¶È¿ØÖÆÆ÷Î¢·Ö²ÎÊıKD
+#define balance_angle_kp1_default  				135.0f	//è‡ªå¹³è¡¡å•ç¯è§’åº¦æ§åˆ¶å™¨æ¯”ä¾‹å‚æ•°KP
+#define balance_angle_ki1_default  				0.0f		//è‡ªå¹³è¡¡å•ç¯è§’åº¦æ§åˆ¶å™¨ç§¯åˆ†å‚æ•°KI
+#define balance_angle_kd1_default  				5.0f		//è‡ªå¹³è¡¡å•ç¯è§’åº¦æ§åˆ¶å™¨å¾®åˆ†å‚æ•°KD
 #define balance_angle_default       			0       //51.5f
 
-#define balance_speed_kp_default        	10			//×ÔÆ½ºâÊ±ËÙ¶È¿ØÖÆÆ÷±ÈÀı²ÎÊıKP
-#define balance_speed_ki_default					3			  //×ÔÆ½ºâÊ±ËÙ¶È¿ØÖÆÆ÷»ı·Ö²ÎÊıKI
-#define balance_speed_kd_default        	0				//×ÔÆ½ºâÊ±ËÙ¶È¿ØÖÆÆ÷Î¢·Ö²ÎÊıKD
+#define balance_speed_kp_default        	10			//è‡ªå¹³è¡¡æ—¶é€Ÿåº¦æ§åˆ¶å™¨æ¯”ä¾‹å‚æ•°KP
+#define balance_speed_ki_default					3			  //è‡ªå¹³è¡¡æ—¶é€Ÿåº¦æ§åˆ¶å™¨ç§¯åˆ†å‚æ•°KI
+#define balance_speed_kd_default        	0				//è‡ªå¹³è¡¡æ—¶é€Ÿåº¦æ§åˆ¶å™¨å¾®åˆ†å‚æ•°KD
 
 
 
 /***********************************************************************************************************************/
-#define balance_speed_scale_default 			0.04f		//×ÔÆ½ºâË«»·¿ØÖÆÊ±£¬½ÇËÙ¶È¿ØÖÆÆ÷Êä³ö×ª»»µ½ÆÚÍû×ËÌ¬Çã½ÇÊ±µÄÁ¿³Ì×ª»»ÏµÊı  0.04f
+#define balance_speed_scale_default 			0.04f		//è‡ªå¹³è¡¡åŒç¯æ§åˆ¶æ—¶ï¼Œè§’é€Ÿåº¦æ§åˆ¶å™¨è¾“å‡ºè½¬æ¢åˆ°æœŸæœ›å§¿æ€å€¾è§’æ—¶çš„é‡ç¨‹è½¬æ¢ç³»æ•°  0.04f
 
-#define balance_angle_kp2_default  				95.0f		//×ÔÆ½ºâË«»·¿ØÖÆÊ±,½Ç¶È¿ØÖÆÆ÷±ÈÀı²ÎÊıKP
-#define balance_angle_ki2_default  				0.0f		//×ÔÆ½ºâË«»·¿ØÖÆÊ±,½Ç¶È¿ØÖÆÆ÷»ı·Ö²ÎÊıKI
-#define balance_angle_kd2_default  				3.5f		//×ÔÆ½ºâË«»·¿ØÖÆÊ±,½Ç¶È¿ØÖÆÆ÷Î¢·Ö²ÎÊıKD
+#define balance_angle_kp2_default  				95.0f		//è‡ªå¹³è¡¡åŒç¯æ§åˆ¶æ—¶,è§’åº¦æ§åˆ¶å™¨æ¯”ä¾‹å‚æ•°KP
+#define balance_angle_ki2_default  				0.0f		//è‡ªå¹³è¡¡åŒç¯æ§åˆ¶æ—¶,è§’åº¦æ§åˆ¶å™¨ç§¯åˆ†å‚æ•°KI
+#define balance_angle_kd2_default  				3.5f		//è‡ªå¹³è¡¡åŒç¯æ§åˆ¶æ—¶,è§’åº¦æ§åˆ¶å™¨å¾®åˆ†å‚æ•°KD
 
-#define balance_gyro_kp_default  					8.0f		//×ÔÆ½ºâË«»·¿ØÖÆÊ±,½ÇËÙ¶È¿ØÖÆÆ÷±ÈÀı²ÎÊıKP
-#define balance_gyro_ki_default  					0.5f		//×ÔÆ½ºâË«»·¿ØÖÆÊ±,½ÇËÙ¶È¿ØÖÆÆ÷»ı·Ö²ÎÊıKI
-#define balance_gyro_kd_default  					1.5f		//×ÔÆ½ºâË«»·¿ØÖÆÊ±,½ÇËÙ¶È¿ØÖÆÆ÷Î¢·Ö²ÎÊıKD
+#define balance_gyro_kp_default  					8.0f		//è‡ªå¹³è¡¡åŒç¯æ§åˆ¶æ—¶,è§’é€Ÿåº¦æ§åˆ¶å™¨æ¯”ä¾‹å‚æ•°KP
+#define balance_gyro_ki_default  					0.5f		//è‡ªå¹³è¡¡åŒç¯æ§åˆ¶æ—¶,è§’é€Ÿåº¦æ§åˆ¶å™¨ç§¯åˆ†å‚æ•°KI
+#define balance_gyro_kd_default  					1.5f		//è‡ªå¹³è¡¡åŒç¯æ§åˆ¶æ—¶,è§’é€Ÿåº¦æ§åˆ¶å™¨å¾®åˆ†å‚æ•°KD
 
 
 
