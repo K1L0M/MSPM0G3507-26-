@@ -407,14 +407,26 @@ void DebugIF_FlushTelemetry(void)
     if (len <= 0 || len >= (int)sizeof(g_telemetry_buf)) return;
 
     g_dma_busy = 1;
-
-    /* Copy to DMA-safe buffer and start transfer */
     memcpy(g_telemetry_dma_buf, g_telemetry_buf, len);
+
     DL_DMA_disableChannel(DMA, DMA_CH1_CHAN_ID);
+
+    /* Flush TX FIFO (disable/enable FIFOs clears FEN bit per DL_UART_changeConfig) */
+    DL_UART_disableFIFOs(UART_0_INST);
+    DL_UART_enableFIFOs(UART_0_INST);
+
+    /* Clear stale DMA done + TX interrupt flags so no pending trigger fires */
+    DL_UART_clearInterruptStatus(UART_0_INST,
+        DL_UART_INTERRUPT_DMA_DONE_TX | DL_UART_INTERRUPT_TX);
+
     DL_DMA_setSrcAddr(DMA, DMA_CH1_CHAN_ID, (uint32_t)g_telemetry_dma_buf);
     DL_DMA_setDestAddr(DMA, DMA_CH1_CHAN_ID, (uint32_t)(&UART_0_INST->TXDATA));
     DL_DMA_setTransferSize(DMA, DMA_CH1_CHAN_ID, len);
+
+    /* Critical section: prevent ISR from stretching the reconfig window */
+    __disable_irq();
     DL_DMA_enableChannel(DMA, DMA_CH1_CHAN_ID);
+    __enable_irq();
 }
 
 /* ---- Called from UART0 ISR on DMA_DONE_TX ---- */
