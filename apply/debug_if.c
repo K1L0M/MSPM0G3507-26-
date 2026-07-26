@@ -21,22 +21,39 @@ static volatile int g_telemetry_pending = 0;
 static char  g_telemetry_buf[384];
 static volatile int g_dma_busy = 0;
 
+static char     g_dma_tx_buf[256];
+static volatile int g_dma_tx_pending = 0;
+
+static void dma_tx_flush(void)
+{
+    if (g_dma_busy || !g_dma_tx_pending) return;
+    g_dma_tx_pending = 0;
+    int len = (int)strlen(g_dma_tx_buf);
+    if (len == 0) return;
+    g_dma_busy = 1;
+    DL_DMA_disableChannel(DMA, DMA_CH1_CHAN_ID);
+    DL_DMA_setSrcAddr(DMA, DMA_CH1_CHAN_ID, (uint32_t)g_dma_tx_buf);
+    DL_DMA_setDestAddr(DMA, DMA_CH1_CHAN_ID, (uint32_t)(&UART_0_INST->TXDATA));
+    DL_DMA_setTransferSize(DMA, DMA_CH1_CHAN_ID, len);
+    DL_DMA_enableChannel(DMA, DMA_CH1_CHAN_ID);
+}
+
 float debug_rate_target = 0;
 uint8_t debug_rate_enable = 0;
 
 volatile uint8_t g_odo_return_trigger = 0;
 volatile uint8_t g_odo_reset_trigger  = 0;
 
-/* ---- UART TX helper (waits for any ongoing DMA to finish first) ---- */
+/* ---- UART TX helper (non-blocking: queues via DMA, drops if busy) ---- */
 static void uart_send(const char *str)
 {
-    while (g_dma_busy) {
-        /* Wait for DMA telemetry to complete before using blocking TX */
-    }
-    while (*str) {
-        DL_UART_Main_transmitDataBlocking(UART_0_INST, (uint32_t)(*str));
-        str++;
-    }
+    if (g_dma_tx_pending) return;
+    int len = (int)strlen(str);
+    if (len >= (int)sizeof(g_dma_tx_buf)) len = (int)sizeof(g_dma_tx_buf) - 1;
+    memcpy(g_dma_tx_buf, str, len);
+    g_dma_tx_buf[len] = '\0';
+    g_dma_tx_pending = 1;
+    dma_tx_flush();
 }
 
 /* ---- Called from UART0 ISR ---- */
@@ -392,8 +409,10 @@ void DebugIF_RequestTelemetry(void)
 /* ---- Called from main loop: format + flush telemetry via DMA ---- */
 void DebugIF_FlushTelemetry(void)
 {
+    dma_tx_flush();  /* drain pending debug/command output first */
     if (!g_telemetry_pending) return;
-    if (g_dma_busy) return;  /* DMA still sending previous frame, skip this one */
+    if (g_dma_busy) return;
+
 
     g_telemetry_pending = 0;
 
@@ -434,11 +453,11 @@ void DebugIF_NotifyDMADone(void)
 
 void DebugIF_Print(const char *str)
 {
-	while (g_dma_busy) {
-		/* Wait for DMA telemetry to complete */
-	}
-	while (*str) {
-		DL_UART_Main_transmitDataBlocking(UART_0_INST, (uint32_t)(*str));
-		str++;
-	}
+	if (g_dma_tx_pending) return;
+	int len = (int)strlen(str);
+	if (len >= (int)sizeof(g_dma_tx_buf)) len = (int)sizeof(g_dma_tx_buf) - 1;
+	memcpy(g_dma_tx_buf, str, len);
+	g_dma_tx_buf[len] = '\0';
+	g_dma_tx_pending = 1;
+	dma_tx_flush();
 }

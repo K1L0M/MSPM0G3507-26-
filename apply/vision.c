@@ -681,16 +681,20 @@ void Detection_ProcessFrame(void)
     if (!g_detection.frame_ready) return;
     g_detection.frame_ready = 0;
 
-    char buf[128];
+    char buf[256];
+    int pos = 0;
     uint8_t i;
     for (i = 0; i < g_detection.num_targets; i++) {
         DetectionTarget *t = &g_detection.targets[i];
-        int len = snprintf(buf, sizeof(buf),
+        int len = snprintf(buf + pos, sizeof(buf) - pos,
             "DET id=%d conf=%.2f dist=%.1f cx=%d\r\n",
             t->ball_id, t->conf, t->dist, t->cx);
-        if (len > 0 && len < (int)sizeof(buf)) {
-            DebugIF_Print(buf);
-        }
+        if (len > 0 && len < (int)(sizeof(buf) - pos)) {
+            pos += len;
+        } else break;
+    }
+    if (pos > 0) {
+        DebugIF_Print(buf);
     }
 }
 
