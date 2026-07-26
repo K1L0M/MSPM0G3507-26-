@@ -411,9 +411,12 @@ void DebugIF_FlushTelemetry(void)
 
     DL_DMA_disableChannel(DMA, DMA_CH1_CHAN_ID);
 
-    /* Flush TX FIFO (disable/enable FIFOs clears FEN bit per DL_UART_changeConfig) */
-    DL_UART_disableFIFOs(UART_0_INST);
+    /* Proper TX FIFO flush via DL_UART_changeConfig (SDK documented path):
+       disables UART, waits for current TX to finish, clears FEN to flush FIFO.
+       Direct CTL0 writes on an enabled UART = unpredictable per SDK. */
+    DL_UART_changeConfig(UART_0_INST);
     DL_UART_enableFIFOs(UART_0_INST);
+    DL_UART_enable(UART_0_INST);
 
     /* Clear stale DMA done + TX interrupt flags so no pending trigger fires */
     DL_UART_clearInterruptStatus(UART_0_INST,
