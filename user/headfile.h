@@ -70,4 +70,5 @@
 #include "developer_mode.h"
 #include "nclink.h"
 #include "debug_if.h"
+#include "path_record.h"
 #endif

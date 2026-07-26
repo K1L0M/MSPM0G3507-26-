@@ -726,6 +726,11 @@
               <FilePath>..\apply\developer\developer_mode.c</FilePath>
             </File>
             <File>
+              <FileName>path_record.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\apply\developer\path_record.c</FilePath>
+            </File>
+            <File>
               <FileName>subtask.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\apply\developer\subtask.c</FilePath>

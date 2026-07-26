@@ -160,6 +160,7 @@ void duty_100hz(void)
 ***************************************/
 void duty_10hz(void)
 {
+	PathRecord_ProcessFlashOp();
 	//手机端app地面站发送	
 	bluetooth_app_send(smartcar_imu.rpy_deg[ROL],
 										 smartcar_imu.rpy_deg[PIT],

@@ -459,6 +459,43 @@ void W25QXX_Write_f(float *data, uint32_t ui32Address, uint32_t ui32Count)
 
 
 
+/* Non-blocking W25Q64 helpers for async Flash ops */
+
+uint8_t W25Q64_is_busy(void)
+{
+    unsigned char byte;
+    W25Q64_CS_0;
+    spi_read_write_byte(0x05);
+    byte = spi_read_write_byte(0xFF);
+    W25Q64_CS_1;
+    return (byte & 0x01);
+}
+
+void W25Q64_erase_sector_send(uint32_t sector)
+{
+    uint32_t addr = sector * 4096;
+    W25Q64_write_enable();
+    W25Q64_CS_0;
+    spi_read_write_byte(0x20);
+    spi_read_write_byte((uint8_t)(addr >> 16));
+    spi_read_write_byte((uint8_t)(addr >> 8));
+    spi_read_write_byte((uint8_t)addr);
+    W25Q64_CS_1;
+}
+
+void W25Q64_write_page_send(uint8_t *buf, uint32_t addr, uint16_t len)
+{
+    uint16_t i;
+    W25Q64_write_enable();
+    W25Q64_CS_0;
+    spi_read_write_byte(0x02);
+    spi_read_write_byte((uint8_t)(addr >> 16));
+    spi_read_write_byte((uint8_t)(addr >> 8));
+    spi_read_write_byte((uint8_t)addr);
+    for (i = 0; i < len; i++) spi_read_write_byte(buf[i]);
+    W25Q64_CS_1;
+}
+
 void Resume_Factory_Setting(void)
 {
   W25QXX_Erase_Chip();

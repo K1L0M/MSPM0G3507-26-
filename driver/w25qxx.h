@@ -38,6 +38,13 @@
 
 
 uint16_t W25Q64_readID(void);
+void    W25Q64_read(uint8_t *buffer, uint32_t read_addr, uint16_t read_length);
+
+/* Non-blocking helpers: send command only, poll BUSY separately */
+uint8_t W25Q64_is_busy(void);
+void    W25Q64_erase_sector_send(uint32_t sector);
+void    W25Q64_write_page_send(uint8_t *buf, uint32_t addr, uint16_t len);
+
 
 
 void w25qxx_gpio_init(void);

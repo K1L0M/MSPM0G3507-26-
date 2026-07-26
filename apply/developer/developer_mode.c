@@ -511,6 +511,161 @@ void sdk_duty_run(void)
 		}
 		break;
 		default:
+
+		case 26: // Path Recording & Reverse Replay
+		{
+			static uint8_t  state = 0;
+			static int32_t  return_idx = 0;
+			static uint8_t  save_pending = 0;
+			static int16_t  prev_mode = -1;
+
+			if (prev_mode != 26) {
+				PathRecord_Init();
+				PathRecord_LoadFromFlash();
+				state        = 0;
+				return_idx   = 0;
+				save_pending = 0;
+				prev_mode    = 26;
+				g_odo_return_trigger = 0;
+				g_odo_reset_trigger  = 0;
+				pid_integrate_reset(&steergyro_ctrl);
+				pid_integrate_reset(&steerangle_ctrl);
+				pid_integrate_reset(&azimuth_ctrl);
+				pid_integrate_reset(&distance_ctrl);
+			}
+
+			switch (state) {
+
+			/* STATE 0: RECORD */
+			case 0:
+				speed_ctrl_mode = 0;
+				motion_ctrl_pwm = 0;
+				speed_control_100hz(speed_ctrl_mode);
+				trackless_output.unlock_flag = UNLOCK;
+
+				PathRecord_Sample();
+
+				{
+					static uint32_t last_printed = 0;
+					uint32_t cnt = (uint32_t)PathRecord_GetCount();
+					if (cnt > 0 && (cnt % 10) == 0 && cnt != last_printed) {
+						last_printed = cnt;
+						char buf[40];
+						snprintf(buf, sizeof(buf),
+							"REC #%lu\r\n", (unsigned long)cnt);
+						DebugIF_Print(buf);
+					}
+				}
+
+				if (g_odo_return_trigger) {
+					g_odo_return_trigger = 0;
+					if (PathRecord_GetCount() == 0) {
+						PathRecord_Sample();
+					}
+					PathRecord_RequestSave();
+					save_pending = 1;
+					if (PathRecord_GetCount() > 0) {
+						return_idx = PathRecord_GetCount() - 1;
+						ngs_nav_ctrl.x = PathRecord_GetX(return_idx);
+						ngs_nav_ctrl.y = PathRecord_GetY(return_idx);
+						ngs_nav_ctrl.update_flag = 1;
+						ngs_nav_ctrl.ctrl_finish_flag = 0;
+					}
+				}
+
+				if (save_pending && !PathRecord_IsFlashBusy()) {
+					save_pending = 0;
+					state = 1;
+					DebugIF_Print("PATH_SAVED OK\r\n");
+				}
+
+				if (g_odo_reset_trigger) {
+					g_odo_reset_trigger = 0;
+					PathRecord_RequestErase();
+					PathRecord_Init();
+					save_pending = 0;
+					DebugIF_Print("PATH_RST\r\n");
+				}
+				break;
+
+			/* STATE 1: RETURN (reverse navigation with lookahead) */
+			case 1:
+			{
+				#define RETURN_LOOKAHEAD 5
+
+				position_control(3.0f, 5);
+				turn_ctrl_pwm = steer_gyro_output;
+				speed_setup   = distance_ctrl.output;
+				speed_expect[0] = speed_setup
+					- turn_ctrl_pwm * steer_gyro_scale;
+				speed_expect[1] = speed_setup
+					+ turn_ctrl_pwm * steer_gyro_scale;
+				speed_ctrl_mode = 1;
+				speed_control_100hz(speed_ctrl_mode);
+				trackless_output.unlock_flag = UNLOCK;
+
+				if (ngs_nav_ctrl.ctrl_finish_flag == 1) {
+					if (return_idx == 0) {
+						state = 3;
+					} else {
+						return_idx--;
+						{
+							uint32_t t = (return_idx >= RETURN_LOOKAHEAD)
+								? (return_idx - RETURN_LOOKAHEAD) : 0;
+							ngs_nav_ctrl.x = PathRecord_GetX(t);
+							ngs_nav_ctrl.y = PathRecord_GetY(t);
+						}
+						ngs_nav_ctrl.update_flag = 1;
+						ngs_nav_ctrl.ctrl_finish_flag = 0;
+					}
+				}
+
+				if (g_odo_reset_trigger) {
+					g_odo_reset_trigger = 0;
+					PathRecord_RequestErase();
+					PathRecord_Init();
+					state = 0;
+				}
+			}
+			break;
+
+			/* STATE 3 (default): DONE */
+			default:
+			{
+				static uint8_t done_printed = 0;
+				speed_ctrl_mode = 0;
+				motion_ctrl_pwm = 0;
+				speed_control_100hz(speed_ctrl_mode);
+
+				if (!done_printed) {
+					float fx = smartcar_imu.state_estimation.pos.x;
+					float fy = smartcar_imu.state_estimation.pos.y;
+					float sx = PathRecord_GetX(0);
+					float sy = PathRecord_GetY(0);
+					float dx = fx - sx, dy = fy - sy;
+					float ed = sqrtf(dx * dx + dy * dy);
+					char buf[64];
+					snprintf(buf, sizeof(buf),
+						"PATH_DONE pts=%ld "
+						"errX=%.2f errY=%.2f "
+						"err=%.2f\r\n",
+						(long)PathRecord_GetCount(),
+						dx, dy, ed);
+					DebugIF_Print(buf);
+					done_printed = 1;
+				}
+				if (g_odo_reset_trigger) {
+					g_odo_reset_trigger = 0;
+					PathRecord_RequestErase();
+					PathRecord_Init();
+					done_printed = 0;
+					state = 0;
+				}
+			}
+			break;
+			}
+		}
+		break;
 		{
 			speed_ctrl_mode=1;//速度控制方式为两轮单独控制
 			trackless_output.yaw_ctrl_mode=ROTATE;//偏航控制模式
