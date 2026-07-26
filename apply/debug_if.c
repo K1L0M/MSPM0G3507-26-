@@ -67,11 +67,23 @@ void DebugIF_ProcessCmd(void)
     /* ---- No-arg commands ---- */
     if (strcmp(cmd, "RET") == 0) {
         g_odo_return_trigger = 1;
+        if (sdk_work_mode == 25) {
+            beep.period = 50;
+            beep.light_on_percent = 0.5f;
+            beep.reset = 1;
+            beep.times = 1;
+        }
         return;
     }
     if (strcmp(cmd, "RST") == 0) {
         g_odo_reset_trigger = 1;
         g_odo_return_trigger = 0;
+        if (sdk_work_mode == 25) {
+            beep.period = 50;
+            beep.light_on_percent = 0.5f;
+            beep.reset = 1;
+            beep.times = 1;
+        }
         return;
     }
     if (strcmp(cmd, "help") == 0) {

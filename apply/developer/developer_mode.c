@@ -446,12 +446,18 @@ void sdk_duty_run(void)
 			if (prev_mode != 25) {
 				state     = 0;
 				prev_mode = 25;
-				g_odo_return_trigger = 0;
+								g_odo_return_trigger = 0;
 				g_odo_reset_trigger  = 0;
+				pid_integrate_reset(&steergyro_ctrl);
+				pid_integrate_reset(&steerangle_ctrl);
+				pid_integrate_reset(&azimuth_ctrl);
+				pid_integrate_reset(&distance_ctrl);
 			}
 			switch (state) {
 				case 0: // WAIT - wait for RET to record start
-					speed_setup = 0; speed_expect[0]=0; speed_expect[1]=0;
+					speed_ctrl_mode = 0;
+					motion_ctrl_pwm = 0;
+					speed_control_100hz(speed_ctrl_mode);
 					trackless_output.unlock_flag = UNLOCK;
 					if (g_odo_return_trigger) {
 						g_odo_return_trigger = 0;
@@ -462,7 +468,9 @@ void sdk_duty_run(void)
 					}
 					break;
 				case 1: // PUSH - manual push phase
-					speed_setup = 0; speed_expect[0]=0; speed_expect[1]=0;
+					speed_ctrl_mode = 0;
+					motion_ctrl_pwm = 0;
+					speed_control_100hz(speed_ctrl_mode);
 					trackless_output.unlock_flag = UNLOCK;
 					if (g_odo_return_trigger) {
 						g_odo_return_trigger = 0;
@@ -478,6 +486,8 @@ void sdk_duty_run(void)
 					speed_setup   = distance_ctrl.output;
 					speed_expect[0] = speed_setup - turn_ctrl_pwm * steer_gyro_scale;
 					speed_expect[1] = speed_setup + turn_ctrl_pwm * steer_gyro_scale;
+					speed_ctrl_mode = 1;
+					speed_control_100hz(speed_ctrl_mode);
 					trackless_output.unlock_flag = UNLOCK;
 					if (ngs_nav_ctrl.ctrl_finish_flag == 1) {
 						float err_x = smartcar_imu.state_estimation.pos.x - start_x;
@@ -492,12 +502,12 @@ void sdk_duty_run(void)
 					}
 					break;
 				default: // DONE - stop, wait for RST
-					speed_setup = 0; speed_expect[0]=0; speed_expect[1]=0;
+					speed_ctrl_mode = 0;
+					motion_ctrl_pwm = 0;
+					speed_control_100hz(speed_ctrl_mode);
 					if (g_odo_reset_trigger) { g_odo_reset_trigger = 0; state = 0; }
 					break;
 			}
-			speed_ctrl_mode = 1;
-			speed_control_100hz(speed_ctrl_mode);
 		}
 		break;
 		default:
